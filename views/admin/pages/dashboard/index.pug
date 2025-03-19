@@ -1,0 +1,33 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+block head    
+  link(rel='stylesheet', href='/admin/css/dashboard.css')
+block main 
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)  
+  .row.mt-4 
+    .col-6
+      a(href=`${prefixAdmin}/my-account`)  
+    .col-6 
+      a(href=`#`)  
+        .noti-container.mb-4
+          h5.noti-header
+            | Chào mừng bạn đến với 
+            span.highlight Hệ thống Quản trị !
+          p.noti.text-left
+            | Chúng tôi rất hân hạnh được đồng hành cùng bạn trong hành trình phát triển và đạt đến những mục tiêu cao nhất.
+          p.noti.text-left
+            | Hãy tận dụng mọi công cụ tại đây để làm việc hiệu quả, sáng tạo và an toàn.
+          p.noti.text-left
+            | Luôn kiểm tra và bảo mật thông tin của bạn để đảm bảo tối đa sự an toàn. 
+          p.noti.text-left 
+            | Nếu có bất kỳ thắc mắc nào, vui lòng liên hệ 
+            span.highlight bộ phận hỗ trợ kỹ thuật.
+          p.noti.text-left
+            | Chúc bạn một ngày làm việc hiệu quả, tràn đầy cảm hứng và niềm vui!
+
+
+
+        
+              
+

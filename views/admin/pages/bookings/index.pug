@@ -1,0 +1,70 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+include ../../mixins/moment.pug
+include ../../mixins/fillter-status.pug
+include ../../mixins/search.pug
+block head 
+  link(rel='stylesheet', href='/admin/css/product.css')
+block main
+  
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)  
+  h1(class="mb-4") Danh Sách Liên Hệ Của Khách Hàng
+  script(src="/admin/js/product.js")
+  .card.mb-3
+    .card-header 
+      .row
+        .col-12
+          i.fas.fa-table.mr-1
+          | Danh sách liên hệ khách hàng
+      .row.mt-4(style="padding-top:15px;border-top: 1px solid #ccc;")
+          .col-5
+            +fillter-status(fillterStatus) 
+          .col-6
+            +search(keywords)
+          .col-1
+            a.trash.ml-2(
+              href=`${prefixAdmin}/records/trash` 
+              class="btn btn-outline"
+              style="font-size: 1.5rem;border-radius: 50%;border: 1px solid #ccc;"
+            )
+              i.fa-regular.fa-trash-can(style="width: 100%; height: 100%;")
+    .card-body
+      .row 
+        .col-md-12
+          +alert-success(expressFlash, 5000)
+          +alert-error(expressFlash, 5000)
+          if records.length > 0
+            table#dataTable(class="table table-sm table-hover" width="100%" cellspacing="0")
+              thead
+                tr
+                  th STT
+                  th Tên Bác Sĩ
+                  th Tên Bệnh Nhân
+                  th Thời Gian Khám
+                  th Thời Gian Đặt Lịch
+                  th Hành động
+              tbody
+                each record,index in records
+                  tr
+                    td= index + 1
+                    td Đậu Huy Trung
+                    td Bệnh Nhân
+                    td= record.time.valueVi
+                      td
+                        +formatDateTime(record.createdAt) 
+                      td 
+                        a(
+                          class = 'btn btn-secondary btn-sm ml-1'
+                          href=`${prefixAdmin}/records/detail/${record.id}`
+                        )
+                          i.fas.fa-eye.mr-1
+                        button(
+                          class = 'btn btn-danger btn-sm ml-1'
+                          button-delete
+                          data-id=record.id
+                        ) 
+                          i.fas.fa-trash-alt.mr-1
+          else
+            p Không có dữ liệu

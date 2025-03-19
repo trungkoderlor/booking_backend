@@ -1,0 +1,83 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+block head 
+  link(rel='stylesheet', href='/admin/css/form.css')
+block main
+ 
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  h1(class="mb-4") Thêm mới chuyên khoa
+  form(action=`${prefixAdmin}/specialties/create` method="POST" enctype="multipart/form-data")
+    div(class="form-group")
+      label(for="name") Tên Chuyên Khoa *
+      input(
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        required
+      )
+            
+    div(class="form-group")
+      label(for="description") Mô Tả *
+      input(
+        type="description"
+        class="form-control"
+        id="description"
+        name="description"
+        required
+      )
+    div(
+      class="form-group" 
+      upload-image
+    )
+      label(for="avatar") Avatar
+      input(
+        type="file"
+        class="form-control-file"
+        id="avatar"
+        name="avatar"
+        accept="image/*"
+        upload-image-input
+      )
+      img(
+        src=""
+        class="image-preview"
+        upload-image-preview
+      )
+      button(
+        type="button"
+        class = 'btn btn-danger btn-sm cancel-image-button-d'
+        cancel-image-button
+        style = "margin-top: 32px;margin-left: 10px;"
+      ) Hủy
+    div(class="form-group form-check form-check-inline")
+        input(
+          type="radio"
+          class="form-check-input"
+          id="statusActive"
+          name="status"
+          value="active"
+          checked
+        )
+        label(for="statusActive" class="form-check-label") Hoạt động
+
+    div(class="form-group form-check form-check-inline")
+      input(
+        type="radio"
+        class="form-check-input"
+        id="statusInActive"
+        name="status"
+        value="inactive"
+      )
+      label(for="statusInActive" class="form-check-label") Dừng hoạt động
+    div(class="form-group")
+      button(
+        type="submit"
+        class="btn btn-primary"
+      ) Tạo mới
+
+        
+
+

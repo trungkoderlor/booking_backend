@@ -1,0 +1,38 @@
+// Nút mở/tắt sidebar
+button.sidebar-toggle.btn.btn-primary(type="button", onclick="toggleSidebar()")
+    i(class="fas fa-bars") 
+.sider 
+    .inner-menu 
+        ul 
+            li
+                a(href=`${prefixAdmin}/dashboard`)
+                    i.fas.fa-tachometer-alt
+                    | Tổng Quan
+            li 
+                a(href=`${prefixAdmin}/clinics`)
+                    i.fa-solid.fa-house-chimney-medical
+                    | Phòng Khám
+            li 
+                a(href=`${prefixAdmin}/specialties`)
+                    i.fa-solid.fa-bed
+                    | Chuyên Khoa
+            li 
+                a(href=`${prefixAdmin}/posts`)
+                    i.fa-regular.fa-newspaper
+                    | Bài Viết
+            li 
+                a(href=`${prefixAdmin}/bookings`)
+                    i.fa-solid.fa-calendar-week
+                    | Lịch Khám
+            li 
+                a(href=`${prefixAdmin}/users`)
+                    i.fa-solid.fa-users
+                    | Tài Khoản Người Dùng
+            
+            li 
+                a(href=`${prefixAdmin}/settings/general`)
+                    i.fas.fa-cogs
+                    | Cài Đặt Chung
+            
+            
+            
