@@ -9,7 +9,7 @@ const PostSchema = new mongoose.Schema(
     slug: { type: String, slug: "title", unique: true },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Doctor",
       required: true,
     },
     createdAt: {

@@ -8,7 +8,7 @@ const HistorySchema = new mongoose.Schema({
   },
   doctorId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    ref: "Doctor",
     required: true,
   },
   description: String,

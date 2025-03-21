@@ -4,7 +4,7 @@ const ScheduleSchema = new mongoose.Schema(
   {
     doctorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Doctor",
       required: true,
     },
     date: { type: Date, required: true },
@@ -21,5 +21,5 @@ const ScheduleSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const Schedule = mongoose.model("Schedule", ScheduleSchema, "Schedules");
+const Schedule = mongoose.model("Schedule", ScheduleSchema, "schedules");
 module.exports = Schedule;
