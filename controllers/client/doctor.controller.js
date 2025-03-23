@@ -4,6 +4,7 @@ const Specialty = require("../../models/specialty.model");
 const Clinic = require("../../models/clinic.model");
 const Schedule = require("../../models/schedule.model");
 const AllCode = require("../../models/allcode.model");
+const Booking = require("../../models/booking.model");
 //[GET] /api/doctors
 module.exports.index = async (req, res) => {
   try {
@@ -58,6 +59,24 @@ module.exports.detail = async (req, res) => {
     };
 
     res.json(doctorWithDetails);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+// [GET] /api/doctors/:slug/schedule/:schedule_id
+module.exports.schedule = async (req, res) => {
+  const { slug, schedule_id } = req.params;
+  try {
+    const schedule = await Schedule.findById(schedule_id);
+    const timeType = await AllCode.findOne({
+      key: "time",
+      type: schedule.timeType,
+    });
+    const newSchedule = {
+      ...schedule.toObject(),
+      timeValue: timeType.valueVi,
+    };
+    res.json(newSchedule);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
