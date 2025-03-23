@@ -11,8 +11,6 @@ const generateToken = (user) => {
 };
 
 // Xác thực token
-const verifyToken = (token) => {
-  return jwt.verify(token, secretKey);
-};
+const verifyToken = (token) => jwt.verify(token, secretKey);
 
 module.exports = { generateToken, verifyToken };

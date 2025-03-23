@@ -1,8 +1,8 @@
 const User = require("../../models/user.model");
 
 const { generateToken } = require("../../helpers/jwt");
-
-const login = async (req, res) => {
+// [POST] /api/auth/login
+module.exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -19,4 +19,20 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+// [POST] /api/auth/register
+module.exports.register = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+// [GET] /api/auth/me
+module.exports.me = async (req, res) => {
+  try {
+    res.json(req.user);
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};

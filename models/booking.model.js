@@ -12,6 +12,20 @@ const BookingSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    scheduleId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Schedule",
+      required: true,
+    },
+    info: {
+      email: String,
+      fullname: String,
+      phone: String,
+      address: String,
+      birthyear: String,
+      gender: String,
+      reasons: String,
+    },
     createdAt: {
       type: Date,
       default: Date.now,

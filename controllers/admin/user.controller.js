@@ -51,13 +51,15 @@ module.exports.createPost = async (req, res) => {
     // Tạo người dùng mới
     const user = new User(req.body);
     await user.save();
-    const doctor = new Doctor({
-      userId: user._id,
-      specialties: req.body.specialty,
-      clinics: req.body.clinic,
-      description: req.body.description,
-    });
-    await doctor.save();
+    if (req.body.role_id === "R2") {
+      const doctor = new Doctor({
+        userId: user._id,
+        specialties: req.body.specialty,
+        clinics: req.body.clinic,
+        description: req.body.description,
+      });
+      await doctor.save();
+    }
     req.flash("success", "Người dùng đã được tạo thành công");
     res.redirect(`${systemconfig.prefixAdmin}/users`);
   } catch (error) {

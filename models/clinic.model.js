@@ -6,6 +6,7 @@ const ClinicSchema = new mongoose.Schema({
   description: String,
   avatar: String,
   name: String,
+  howtogo: String,
   slug: { type: String, slug: "name", unique: true },
   status: { type: String, enum: ["active", "inactive"], default: "active" },
 });
