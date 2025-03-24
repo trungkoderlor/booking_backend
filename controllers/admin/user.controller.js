@@ -3,6 +3,7 @@ const User = require("../../models/user.model");
 const Clinic = require("../../models/clinic.model");
 const Specialty = require("../../models/specialty.model");
 const Doctor = require("../../models/doctor.model");
+const hashPassword = require("../../helpers/hashPassword");
 const systemconfig = require("../../config/system");
 //[GET] /admin/users
 module.exports.index = async (req, res) => {

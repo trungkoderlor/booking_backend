@@ -4,5 +4,6 @@ const Controller = require("../../controllers/client/auth.controller");
 const authMiddleware = require("../../validates/client/authMiddleware");
 router.post("/login", Controller.login);
 router.post("/register", Controller.register);
+router.post("/register/otp", Controller.registerOtp);
 router.get("/me", authMiddleware, Controller.me);
 module.exports = router;
