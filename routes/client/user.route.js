@@ -11,4 +11,5 @@ router.patch(
   upload.single("avatar"),
   Controller.update
 );
+router.patch("/change-password", authMiddleware, Controller.changePassword);
 module.exports = router;

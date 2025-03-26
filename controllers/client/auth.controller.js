@@ -83,3 +83,70 @@ module.exports.me = async (req, res) => {
     res.status(500).json({ message: "Lỗi máy chủ" });
   }
 };
+// [POST] /api/auth/forgot-password
+module.exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ message: "Email không tồn tại" });
+    const ExistOTP = await Otp.findOne({ email: email });
+    if (ExistOTP) {
+      await Otp.deleteOne({ email: email });
+    }
+    const otpObj = {
+      email: email,
+      otp: generateRandomNumber(6),
+      expireAt: Date.now(),
+    };
+    const otp = new Otp(otpObj);
+    await otp.save();
+    const subject = "Mã OTP xác nhận đổi mật khẩu";
+    const html = `Mã OTP của bạn là:<b> ${otp.otp}</b>.Thời gian hiệu lực 3 phút`;
+    sendMail(email, subject, html);
+    res.json({ message: "Vui lòng kiểm tra email của bạn" });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+// [POST] /api/auth/forgot-password/otp
+module.exports.forgotPasswordOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+    const otpObj = await Otp.findOne({
+      email: email,
+      otp: otp,
+    });
+    if (!otpObj) return res.status(401).json({ message: "OTP không đúng" });
+    res.json({ message: "Xác nhận thành công" });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+// [PATCH] /api/auth/forgot-password/reset
+module.exports.forgotPasswordReset = async (req, res) => {
+  try {
+    const { email, password, otp } = req.body;
+    const otpObj = await Otp.findOne({
+      email: email,
+      otp: otp,
+    });
+    if (!otpObj) return res.status(401).json({ message: "OTP không đúng" });
+    if (!password)
+      return res.status(401).json({ message: "Mật khẩu không được để trống" });
+    if (!email)
+      return res.status(401).json({ message: "Email không được để trống" });
+    await Otp.deleteOne({ email: email, otp: otp });
+    await User.updateOne(
+      { email: email },
+      { password: await hashPassword(password) }
+    );
+    const user = await User.findOne({ email });
+    const token = generateToken(user);
+    res.json({
+      token,
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};

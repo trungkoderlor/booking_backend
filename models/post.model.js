@@ -9,8 +9,12 @@ const PostSchema = new mongoose.Schema(
     slug: { type: String, slug: "title", unique: true },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Doctor",
+      ref: "User",
       required: true,
+    },
+    featured: {
+      type: Boolean,
+      default: false,
     },
     createdAt: {
       type: Date,
