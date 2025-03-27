@@ -6,7 +6,7 @@ const SpecialtySchema = new mongoose.Schema({
   avatar: String,
   status: { type: String, enum: ["active", "inactive"], default: "active" },
   name: String,
-  slug: { type: String, slug: "name", unique: true },
+  slug: { type: String, slug: "name", unique: true, index: true },
 });
 const Specialty = mongoose.model("Specialty", SpecialtySchema, "specialties");
 module.exports = Specialty;

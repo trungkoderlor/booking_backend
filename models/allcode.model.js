@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const AllCodesSchema = new mongoose.Schema({
   key: String,
-  type: String,
+  type: { type: String, unique: true, index: true },
   valueEn: String,
   valueVi: String,
 });

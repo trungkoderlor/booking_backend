@@ -6,7 +6,7 @@ const PostSchema = new mongoose.Schema(
     content: String,
     poster: String,
     title: String,
-    slug: { type: String, slug: "title", unique: true },
+    slug: { type: String, slug: "title", unique: true, index: true },
     authorId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

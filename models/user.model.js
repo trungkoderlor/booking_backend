@@ -4,7 +4,7 @@ const slug = require("mongoose-slug-updater");
 mongoose.plugin(slug);
 const userSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     fullname: String,
     address: String,

@@ -7,7 +7,7 @@ const ClinicSchema = new mongoose.Schema({
   avatar: String,
   name: String,
   howtogo: String,
-  slug: { type: String, slug: "name", unique: true },
+  slug: { type: String, slug: "name", unique: true, index: true },
   status: { type: String, enum: ["active", "inactive"], default: "active" },
 });
 const Clinic = mongoose.model("Clinic", ClinicSchema, "clinics");
