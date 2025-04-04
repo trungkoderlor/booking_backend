@@ -1,0 +1,99 @@
+extends ../../layouts/layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h2.mb-0
+      i.fas.fa-calendar-plus.me-2
+      | Tạo Lịch Khám
+    a.btn.btn-outline-secondary(href="/doctor/schedule")
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại Lịch Khám
+
+  if expressFlash.success !=''
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error !=''
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.row
+    div.col-lg-8
+      div.card.border-0.shadow-sm
+        div.card-header.bg-primary.text-white.py-3
+          h5.card-title.mb-0
+            i.fas.fa-calendar-alt.me-2
+            | Chi Tiết Lịch Khám
+        
+        div.card-body.p-4
+          form#scheduleForm(action="/doctor/schedule/create" method="POST")
+            div.row
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fas.fa-calendar-day.me-1
+                  | Ngày
+                input#scheduleDate.form-control(type="date" name="date" required)
+              
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fas.fa-clock.me-1
+                  | Khung Giờ
+                select#timeType.form-select(name="timeType" required)
+                  option(value="" selected disabled) Chọn khung giờ
+                  each schedule in schedules
+                    option(value=schedule.type) #{schedule.valueEn}
+            
+            div.row
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fas.fa-users.me-1
+                  | Số Lượng Bệnh Nhân Tối Đa
+                input#maxNumber.form-control(type="number" name="maxNumber" min="1" max="20" value="10" required)
+              
+              div.col-md-6.mb-3
+                label.form-label.fw-bold
+                  i.fas.fa-tag.me-1
+                  | Loại Khám
+                select.form-select
+                  option(value="regular") Khám Thông Thường
+                  option(value="followup") Tái Khám
+                  option(value="consultation") Tư Vấn
+            
+            div.d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+              button.btn.btn-secondary.me-md-2(type="reset")
+                i.fas.fa-undo.me-1
+                | Đặt Lại
+              button.btn.btn-primary(type="submit")
+                i.fas.fa-save.me-1
+                | Tạo Lịch Khám
+    
+    div.col-lg-4
+      div.card.border-0.shadow-sm.mb-4
+        div.card-header.bg-light.py-3
+          h5.card-title.mb-0
+            i.fas.fa-info-circle.me-2
+            | Hướng Dẫn
+        
+        div.card-body
+          ul.list-group.list-group-flush
+            li.list-group-item.d-flex
+              i.fas.fa-check-circle.text-success.me-2.mt-1
+              | Nên đặt lịch trước ít nhất 3 ngày
+            li.list-group-item.d-flex
+              i.fas.fa-check-circle.text-success.me-2.mt-1
+              | Giới hạn 20 bệnh nhân mỗi buổi khám
+            li.list-group-item.d-flex
+              i.fas.fa-check-circle.text-success.me-2.mt-1
+              | Có thể hủy lịch trước 24 giờ
+      
+      div.card.border-0.bg-light.shadow-sm
+        div.card-body
+          h5.mb-3 Cần Trợ Giúp?
+          p Liên hệ với quản trị viên nếu bạn có thắc mắc về lịch khám.
+          button.btn.btn-outline-primary.btn-sm.w-100
+            i.fas.fa-headset.me-1
+            | Hỗ Trợ

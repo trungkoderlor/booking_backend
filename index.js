@@ -9,6 +9,7 @@ const flash = require("connect-flash");
 const system = require("./config/system");
 const route = require("./routes/client/index.route");
 const routeAdmin = require("./routes/admin/index.route");
+const routeDoctor = require("./routes/doctor/index.route");
 const app = express();
 const database = require("./config/database");
 const cors = require("cors");
@@ -51,6 +52,7 @@ app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 //route
 routeAdmin(app);
 route(app);
+routeDoctor(app);
 //end route
 //404
 app.get("*", (req, res) => {
@@ -61,6 +63,7 @@ app.get("*", (req, res) => {
 //end 404
 //app locatiom var
 app.locals.prefixAdmin = system.prefixAdmin;
+app.locals.prefixDoctor = system.prefixDoctor;
 app.locals.moment = moment;
 routeAdmin(app);
 app.listen(port, () => {

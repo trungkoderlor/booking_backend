@@ -1,0 +1,68 @@
+extends ../../layouts/layout
+
+block content
+  #{user.avatar}
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h2.mb-0
+      i.fas.fa-user-edit.me-2
+      | Chỉnh Sửa Hồ Sơ
+    a.btn.btn-outline-secondary(href="/doctor/profile")
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại Hồ Sơ
+
+  if expressFlash.success != ''
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error != ''
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.card.border-0.shadow-sm
+    div.card-body.p-4
+      form(action="/doctor/profile/edit" method="POST" enctype="multipart/form-data")
+        div.row
+          div.col-md-4.mb-4
+            div.text-center.mb-3
+              if user.avatar
+                img.rounded-circle.img-thumbnail.shadow-sm.mb-3(src=user.avatar alt="Ảnh hiện tại" width="150")
+              else
+                div.avatar-placeholder.rounded-circle.mx-auto.d-flex.align-items-center.justify-content-center.bg-light.mb-3
+                  i.fas.fa-user-md.fa-3x.text-primary
+              
+              div.form-label Tải Lên Ảnh Đại Diện Mới
+              input.form-control(type="file" name="avatar" accept="image/*")
+          
+          div.col-md-8
+            div.row
+              div.col-md-6.mb-3
+                label.form-label.fw-bold Họ Và Tên
+                input.form-control(type="text" name="name" value=user.fullname required)
+              
+              div.col-md-6.mb-3
+                label.form-label.fw-bold Địa Chỉ Email
+                input.form-control(type="email" value=user.email readonly)
+              
+              div.col-md-6.mb-3
+                label.form-label.fw-bold Số Điện Thoại
+                input.form-control(type="text" name="phone" value=user.phone)
+              
+              div.col-md-6.mb-3
+                label.form-label.fw-bold Chuyên Khoa
+                input.form-control(type="text" name="specialty" value=user.doctor.specialty)
+              
+              div.col-12.mb-3
+                label.form-label.fw-bold Giới Thiệu / Tiểu Sử
+                textarea.form-control(name="bio" rows="4") #{user.doctor.description}
+        
+        div.d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
+          button.btn.btn-secondary.me-md-2(type="reset")
+            i.fas.fa-undo.me-1
+            | Đặt Lại
+          button.btn.btn-primary(type="submit")
+            i.fas.fa-save.me-1
+            | Lưu Thay Đổi

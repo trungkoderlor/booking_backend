@@ -3,7 +3,7 @@ const User = require("../../models/user.model");
 const Clinic = require("../../models/clinic.model");
 const Specialty = require("../../models/specialty.model");
 const Doctor = require("../../models/doctor.model");
-const hashPassword = require("../../helpers/hashPassword");
+const { hashPassword, comparePassword } = require("../../helpers/hashPassword");
 const systemconfig = require("../../config/system");
 //[GET] /admin/users
 module.exports.index = async (req, res) => {
@@ -48,7 +48,7 @@ module.exports.createPost = async (req, res) => {
     if (req.file) {
       req.body.avatar = `/uploads/${req.file.filename}`;
     }
-
+    req.body.password = await hashPassword(req.body.password);
     // Tạo người dùng mới
     const user = new User(req.body);
     await user.save();

@@ -1,0 +1,115 @@
+extends ../../layouts/layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h2.mb-0
+      i.fas.fa-calendar-alt.me-2
+      | Lịch Khám Của Tôi
+    div
+      a.btn.btn-outline-secondary.me-2(href="/doctor/schedule")
+        i.fas.fa-th-large.me-1
+        | Tổng Quan
+      a.btn.btn-primary(href="/doctor/schedule/create")
+        i.fas.fa-plus.me-1
+        | Tạo Lịch Khám Mới
+
+  if expressFlash.success!=''
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error !=''
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.card.border-0.shadow-sm
+    div.card-header.bg-white.p-3
+      div.row
+        div.col-md-6.mb-2.mb-md-0
+          div.input-group
+            span.input-group-text
+              i.fas.fa-search
+            input#searchInput.form-control(type="text" placeholder="Tìm kiếm theo ngày...")
+        
+        div.col-md-6
+          input#dateFilter.form-control(type="date")
+    
+    div.card-body.p-0
+      div.table-responsive
+        table.table.table-hover.align-middle.mb-0
+          thead.table-light
+            tr
+              th.text-center STT
+              th Ngày
+              th Khung Giờ
+              th Số Lượng Bệnh Nhân
+              th Đã Đặt
+              th Trạng Thái
+              th Thao Tác
+          
+          tbody
+            if schedules && schedules.length > 0
+              each schedule, index in schedules
+                tr
+                  td.text-center #{index + 1} 
+                  td
+                    span.badge.bg-light.text-dark #{new Date(schedule.date).toLocaleDateString('vi-VN', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
+                  td #{schedule.time}
+                  td.text-center #{schedule.maxNumber}
+                  td.text-center #{schedule.currentNumber || 0}
+                  td
+                    if new Date(schedule.date) < new Date()
+                      span.badge.bg-secondary Đã Qua
+                    else if schedule.currentNumber >= schedule.maxNumber
+                      span.badge.bg-danger Đã Đầy
+                    else
+                      span.badge.bg-success Còn Trống
+                  td
+                    div.dropdown
+                      button.btn.btn-sm.btn-light.dropdown-toggle(data-bs-toggle="dropdown")
+                        i.fas.fa-ellipsis-v
+                      div.dropdown-menu
+                        a.dropdown-item(href=`/doctor/schedule/bookings?scheduleId=${schedule._id}`)
+                          i.fas.fa-eye.me-1
+                          | Xem Lịch Hẹn
+                        div.dropdown-divider
+                        a.dropdown-item.text-danger(href="#" data-bs-toggle="modal" data-bs-target="#deleteScheduleModal" data-id=schedule._id)
+                          i.fas.fa-trash.me-1
+                          | Xóa Lịch
+            else
+              tr
+                td.text-center.py-4(colspan="7")
+                  div.text-muted Bạn chưa có lịch khám nào
+                  a.btn.btn-sm.btn-primary.mt-2(href="/doctor/schedule/create") Tạo Lịch Khám Mới
+
+  // Delete Modal
+  div#deleteScheduleModal.modal.fade(tabindex="-1")
+    div.modal-dialog
+      div.modal-content
+        div.modal-header
+          h5.modal-title Xác Nhận Xóa
+          button.btn-close(type="button" data-bs-dismiss="modal")
+        div.modal-body
+          p Bạn có chắc chắn muốn xóa lịch khám này?
+          p.text-danger.fw-bold Lưu ý: Hành động này không thể hoàn tác.
+        div.modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Hủy
+          form#deleteScheduleForm(action="" method="POST")
+            input(type="hidden" name="_method" value="DELETE")
+            button.btn.btn-danger(type="submit") Xóa
+
+  script.
+    document.addEventListener('DOMContentLoaded', function() {
+      const deleteModal = document.getElementById('deleteScheduleModal');
+      if (deleteModal) {
+        deleteModal.addEventListener('show.bs.modal', function(event) {
+          const button = event.relatedTarget;
+          const scheduleId = button.getAttribute('data-id');
+          const form = document.getElementById('deleteScheduleForm');
+          form.action = `/doctor/schedule/${scheduleId}/delete`;
+        });
+      }
+    });

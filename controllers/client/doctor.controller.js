@@ -9,6 +9,7 @@ const Booking = require("../../models/booking.model");
 module.exports.index = async (req, res) => {
   try {
     const doctors = await Doctor.find().populate("userId");
+
     const newDoctors = await Promise.all(
       doctors.map(async (doctor) => {
         const specialties = await Specialty.find({

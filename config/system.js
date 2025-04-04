@@ -1,4 +1,6 @@
-PATH_ADMIN = '/admin';
+PATH_ADMIN = "/admin";
+PATH_DOCTOR = "/doctor";
 module.exports = {
-    prefixAdmin : PATH_ADMIN
+  prefixAdmin: PATH_ADMIN,
+  prefixDoctor: PATH_DOCTOR,
 };

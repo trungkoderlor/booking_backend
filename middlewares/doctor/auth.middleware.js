@@ -1,18 +1,21 @@
+const { verifyToken } = require("../../helpers/jwt");
 const User = require("../../models/user.model");
-const { generateToken, verifyToken } = require("../../helpers/jwt");
+const Doctor = require("../../models/doctor.model");
+const { generateToken } = require("../../helpers/jwt");
 const systemconfig = require("../../config/system");
 const authMiddleware = async (req, res, next) => {
   const accessToken = req.cookies.access_token;
   const refreshToken = req.cookies.refresh_token;
 
   if (!accessToken && !refreshToken) {
-    res.redirect(`${systemconfig.prefixAdmin}/auth/login`);
+    res.redirect(`${systemconfig.prefixDoctor}/auth/login`);
     return;
   }
 
   try {
     decoded = verifyToken(accessToken);
     req.user = await User.findById(decoded.id);
+    req.doctor = await Doctor.findOne({ userId: req.user._id });
     next();
   } catch (err) {
     if (refreshToken) {
@@ -29,11 +32,11 @@ const authMiddleware = async (req, res, next) => {
         return next();
       } catch (refreshErr) {
         console.log("Refresh token invalid:", refreshErr);
-        return res.redirect(`${systemconfig.prefixAdmin}/auth/login`);
+        return res.redirect(`${systemconfig.prefixDoctor}/auth/login`);
       }
     }
 
-    return res.redirect(`${systemconfig.prefixAdmin}/auth/login`);
+    return res.redirect(`${systemconfig.prefixDoctor}/auth/login`);
   }
 };
 

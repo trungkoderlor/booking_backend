@@ -15,7 +15,7 @@ module.exports.login = async (req, res) => {
     if (!isMatch)
       return res.status(401).json({ message: "Mật khẩu không đúng" });
 
-    const token = generateToken(user);
+    const token = generateToken(user, "7d");
     res.json({ token, user });
   } catch (error) {
     res.status(500).json({ message: "Lỗi máy chủ" });
@@ -66,7 +66,7 @@ module.exports.registerOtp = async (req, res) => {
     user.role_id = "R3";
     await user.save();
 
-    const token = generateToken(user);
+    const token = generateToken(user, "7d");
     res.json({
       token,
       user,
@@ -141,7 +141,7 @@ module.exports.forgotPasswordReset = async (req, res) => {
       { password: await hashPassword(password) }
     );
     const user = await User.findOne({ email });
-    const token = generateToken(user);
+    const token = generateToken(user, "7d");
     res.json({
       token,
       user,

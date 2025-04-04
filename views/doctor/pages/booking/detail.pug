@@ -1,0 +1,181 @@
+extends ../../layouts/layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h2.mb-0
+      i.fas.fa-calendar-check.me-2
+      | Chi Tiết Lịch Hẹn
+    div
+      a.btn.btn-outline-secondary(href="/doctor/booking")
+        i.fas.fa-arrow-left.me-1
+        | Quay Lại Danh Sách
+
+  if expressFlash.success !=""
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error !=""
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.row
+    div.col-lg-8
+      div.card.border-0.shadow-sm.mb-4
+        div.card-header.bg-primary.text-white.py-3
+          h5.card-title.mb-0
+            i.fas.fa-info-circle.me-2
+            | Thông Tin Lịch Hẹn
+        
+        div.card-body.p-4
+          div.row.mb-4
+            div.col-md-6.mb-3.mb-md-0
+              div.border.rounded.p-3.h-100
+                h6.border-bottom.pb-2.text-uppercase.text-primary Thông Tin Thời Gian
+                div.mb-2
+                  strong.d-block Ngày khám:
+                  span #{new Date(booking.scheduleId.date).toLocaleDateString('vi-VN', {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'})}
+                div.mb-2
+                  strong.d-block Giờ khám:
+                  span #{booking.time}
+                div.mb-2
+                  strong.d-block Ngày đặt lịch:
+                  span #{new Date(booking.createdAt).toLocaleDateString('vi-VN')} #{new Date(booking.createdAt).toLocaleTimeString('vi-VN')}
+            
+            div.col-md-6
+              div.border.rounded.p-3.h-100
+                h6.border-bottom.pb-2.text-uppercase.text-primary Trạng Thái
+                div.d-flex.justify-content-between.align-items-center
+                  case booking.statusId
+                    when "S1"
+                      div.d-flex.align-items-center
+                        span.badge.bg-primary.me-2 Mới
+                        span Chờ xác nhận
+                    when "S2"
+                      div.d-flex.align-items-center
+                        span.badge.bg-info.me-2 Đã Xác Nhận
+                        span Đã xác nhận lịch hẹn
+                    when "S3"
+                      div.d-flex.align-items-center
+                        span.badge.bg-success.me-2 Hoàn Thành
+                        span Đã hoàn thành khám
+                    when "S4"
+                      div.d-flex.align-items-center
+                        span.badge.bg-danger.me-2 Đã Hủy
+                        span Lịch hẹn đã bị hủy
+                    default
+                      div.d-flex.align-items-center
+                        span.badge.bg-secondary.me-2 Không Xác Định
+                        span Trạng thái không xác định
+                
+                if booking.statusId !== "S3" && booking.statusId !== "S4"
+                  hr
+                  form(action=`/doctor/booking/${booking._id}/status` method="POST")
+                    div.mb-3
+                      label.form-label Cập nhật trạng thái
+                      select.form-select(name="status" required)
+                        option(value="" disabled selected) Chọn trạng thái
+                        each status in statusCodes
+                          option(value=status.valueEn, selected=booking.statusId === status.type) #{status.valueVi}
+                    button.btn.btn-primary.w-100(type="submit")
+                      i.fas.fa-save.me-1
+                      | Cập Nhật Trạng Thái
+          
+          div.card.border-0.shadow-sm.mb-0
+            div.card-header.bg-light.py-3
+              h6.card-title.mb-0 Thông Tin Bệnh Nhân
+            
+            div.card-body.p-3
+              div.row
+                div.col-md-2.text-center.mb-3.mb-md-0
+                  img.img-thumbnail.rounded-circle(src=(booking.patientId.avatar || "/img/default-avatar.png") alt="Bệnh nhân" width="100")
+                
+                div.col-md-5.mb-3.mb-md-0
+                  div.mb-2
+                    strong.d-block Họ và tên:
+                    span #{booking.info.fullname || booking.patientId.fullname}
+                  div.mb-2
+                    strong.d-block Năm sinh:
+                    span #{booking.info.birthyear || 'Không có thông tin'}
+                  div.mb-2
+                    strong.d-block Giới tính:
+                    span #{booking.info.gender === 'M' ? 'Nam' : booking.info.gender === 'F' ? 'Nữ' : 'Không có thông tin'}
+                
+                div.col-md-5
+                  div.mb-2
+                    strong.d-block Địa chỉ email:
+                    span #{booking.info.email || booking.patientId.email || 'Không có thông tin'}
+                  div.mb-2
+                    strong.d-block Số điện thoại:
+                    span #{booking.info.phone || booking.patientId.phone || 'Không có thông tin'}
+                  div.mb-2
+                    strong.d-block Địa chỉ:
+                    span #{booking.info.address || 'Không có thông tin'}
+              
+              if booking.info.reasons
+                hr
+                div.mb-0
+                  strong.d-block Lý do khám:
+                  p.mb-0 #{booking.info.reasons}
+    
+    div.col-lg-4
+      div.card.border-0.shadow-sm.mb-4
+        div.card-header.bg-light.py-3
+          h5.card-title.mb-0
+            i.fas.fa-stethoscope.me-2
+            | Thao Tác Y Tế
+        
+        div.card-body.p-3
+          div.d-grid.gap-2
+            button.btn.btn-primary(data-bs-toggle="modal" data-bs-target="#medicalRecordModal")
+              i.fas.fa-notes-medical.me-1
+              | Ghi Chú Y Tế
+            a.btn.btn-outline-info(href="#" target="_blank")
+              i.fas.fa-file-prescription.me-1
+              | Kê Đơn Thuốc
+            a.btn.btn-outline-secondary(href="#")
+              i.fas.fa-print.me-1
+              | In Phiếu Khám
+      
+      div.card.border-0.shadow-sm
+        div.card-header.bg-light.py-3
+          h5.card-title.mb-0
+            i.fas.fa-comments.me-2
+            | Liên Hệ
+        
+        div.card-body.p-3
+          div.d-grid.gap-2
+            a.btn.btn-outline-primary(href=`mailto:${booking.info.email || booking.patientId.email}`)
+              i.fas.fa-envelope.me-1
+              | Gửi Email
+            a.btn.btn-outline-success(href=`tel:${booking.info.phone || booking.patientId.phone}`)
+              i.fas.fa-phone.me-1
+              | Gọi Điện
+            a.btn.btn-outline-info(href="#")
+              i.fas.fa-comment-sms.me-1
+              | Gửi SMS
+
+  // Medical Record Modal
+  div#medicalRecordModal.modal.fade(tabindex="-1")
+    div.modal-dialog.modal-lg
+      div.modal-content
+        div.modal-header
+          h5.modal-title Ghi Chú Y Tế
+          button.btn-close(type="button" data-bs-dismiss="modal")
+        div.modal-body
+          form#medicalNoteForm
+            div.mb-3
+              label.form-label Chuẩn đoán
+              textarea.form-control(rows="3" placeholder="Nhập chuẩn đoán...")
+            div.mb-3
+              label.form-label Kết luận
+              textarea.form-control(rows="3" placeholder="Nhập kết luận...")
+            div.mb-3
+              label.form-label Lời dặn
+              textarea.form-control(rows="3" placeholder="Nhập lời dặn cho bệnh nhân...")
+        div.modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Đóng
+          button.btn.btn-primary(type="button") Lưu Ghi Chú

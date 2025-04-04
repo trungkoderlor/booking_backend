@@ -1,0 +1,77 @@
+extends ../../layouts/layout
+
+block content
+  if expressFlash.success != ''
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error!= ''
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.row
+    div.col-md-4.mb-4
+      div.card.border-0.shadow-sm
+        div.card-header.bg-primary.text-white.py-3
+          h5.card-title.mb-0
+            i.fas.fa-id-card.me-2
+            | Hồ Sơ Bác Sĩ
+        div.card-body.text-center.py-4
+          div.mb-4
+            if user.avatar
+              img.rounded-circle.img-thumbnail.shadow(src=user.avatar alt="Ảnh Hồ Sơ" width="150")
+            else
+              div.avatar-placeholder.rounded-circle.mx-auto.d-flex.align-items-center.justify-content-center.bg-light
+                i.fas.fa-user-md.fa-3x.text-primary
+          h4.card-title #{user.fullname}
+          p.card-text.text-muted Bác Sĩ
+        
+        div.card-footer.p-3
+          div.d-grid
+            a.btn.btn-outline-primary(href="/doctor/profile/edit")
+              i.fas.fa-edit.me-2
+              | Chỉnh Sửa Hồ Sơ
+    
+    div.col-md-8
+      div.card.border-0.shadow-sm
+        div.card-header.bg-primary.text-white.py-3
+          h5.card-title.mb-0
+            i.fas.fa-info-circle.me-2
+            | Thông Tin Cá Nhân
+        
+        div.card-body.p-4
+          div.row.mb-3
+            div.col-sm-4.text-muted
+              i.fas.fa-user.me-2
+              | Họ Và Tên
+            div.col-sm-8.fw-bold #{user.fullname}
+          
+          div.row.mb-3
+            div.col-sm-4.text-muted
+              i.fas.fa-envelope.me-2
+              | Email
+            div.col-sm-8 #{user.email}
+          
+          div.row.mb-3
+            div.col-sm-4.text-muted
+              i.fas.fa-phone.me-2
+              | Số Điện Thoại
+            div.col-sm-8 #{user.phone}
+          
+          if user.doctor.specialty
+            div.row.mb-3
+              div.col-sm-4.text-muted
+                i.fas.fa-stethoscope.me-2
+                | Chuyên Khoa
+              div.col-sm-8 #{user.doctor.specialty}
+          
+          if user.doctor.experience
+            div.row.mb-3
+              div.col-sm-4.text-muted
+                i.fas.fa-briefcase.me-2
+                | Kinh Nghiệm
+              div.col-sm-8 #{user.doctor.experience} năm

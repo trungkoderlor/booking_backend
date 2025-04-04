@@ -1,0 +1,92 @@
+extends ../../layouts/layout
+
+block content
+  div.d-flex.justify-content-between.align-items-center.mb-4
+    h2.mb-0
+      i.fas.fa-user-clock.me-2
+      | Danh Sách Lịch Hẹn
+    div
+      a.btn.btn-outline-secondary(href="/doctor/dashboard")
+        i.fas.fa-th-large.me-1
+        | Tổng Quan
+
+  if expressFlash.success !=''
+    div.alert.alert-success.alert-dismissible.fade.show
+      i.fas.fa-check-circle.me-2
+      | #{expressFlash.success}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  if expressFlash.error !=''
+    div.alert.alert-danger.alert-dismissible.fade.show
+      i.fas.fa-exclamation-circle.me-2
+      | #{expressFlash.error}
+      button.btn-close(type="button" data-bs-dismiss="alert")
+  
+  div.card.border-0.shadow-sm
+    div.card-header.bg-white.p-3
+      div.row
+        div.col-md-4.mb-2.mb-md-0
+          div.input-group
+            span.input-group-text
+              i.fas.fa-search
+            input#searchInput.form-control(type="text" placeholder="Tìm kiếm bệnh nhân...")
+        
+        div.col-md-4.mb-2.mb-md-0
+          select#statusFilter.form-select
+            option(value="") Tất Cả Trạng Thái
+            option(value="S1") Mới
+            option(value="S2") Đã Xác Nhận
+            option(value="S3") Hoàn Thành
+            option(value="S4") Đã Hủy
+        
+        div.col-md-4
+          input#dateFilter.form-control(type="date")
+    
+    div.card-body.p-0
+      div.table-responsive
+        table.table.table-hover.align-middle.mb-0
+          thead.table-light
+            tr
+              th.text-center STT
+              th Ngày
+              th Thời Gian
+              th Bệnh Nhân
+              th Liên Hệ
+              th Trạng Thái
+              th Thao Tác
+          
+          tbody
+            if bookings && bookings.length > 0
+              each booking, index in bookings
+                tr
+                  td.text-center #{index + 1}
+                  td
+                    span.badge.bg-light.text-dark #{new Date(booking.scheduleId.date).toLocaleDateString('vi-VN')}
+                  td #{booking.time}
+                  td
+                    div.d-flex.align-items-center
+                      img.avatar-xs.rounded-circle.me-2(src=(booking.patientId.avatar || "/img/default-avatar.png") alt="Bệnh nhân")
+                      span #{booking.patientId.fullname}
+                  td
+                    div #{booking.info.email}
+                    div #{booking.info.phone}
+                  td
+                    case booking.statusId
+                      when "S1"
+                        span.badge.bg-primary Mới
+                      when "S2"
+                        span.badge.bg-info Đã Xác Nhận
+                      when "S3"
+                        span.badge.bg-success Hoàn Thành
+                      when "S4"
+                        span.badge.bg-danger Đã Hủy
+                      default
+                        span.badge.bg-secondary Không Xác Định
+                  td
+                    a.btn.btn-sm.btn-outline-primary(href=`/doctor/booking/${booking._id}`)
+                      i.fas.fa-eye.me-1
+                      | Chi Tiết
+            else
+              tr
+                td.text-center.py-4(colspan="7")
+                  div.text-muted Không tìm thấy lịch hẹn nào

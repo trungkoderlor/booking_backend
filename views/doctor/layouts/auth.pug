@@ -1,0 +1,27 @@
+doctype html
+html(lang="vi")
+  head
+    meta(charset="UTF-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1.0")
+    title #{pageTitle} | Cổng Thông Tin Bác Sĩ
+    link(rel="stylesheet", href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css")
+    link(rel="stylesheet", href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css")
+    link(rel="stylesheet", href="/css/doctor.css")
+  body.bg-light
+    header.bg-primary.py-3.text-white
+      div.container.text-center
+        h3
+          img(src="/uploads/logo.svg" alt="Logo" width="200px"  class="me-2")
+          | Cổng Thông Tin Bác Sĩ
+        p.mb-0 Truy cập hệ thống quản lý phòng khám của bạn
+    
+    main.container.py-5
+      block content
+    
+    footer.bg-dark.text-white.py-4.mt-5
+      div.container.text-center
+        p.mb-0 &copy; #{new Date().getFullYear()} Hệ Thống Đặt Lịch Khám Bệnh
+        p.mb-0.small Cung cấp dịch vụ chăm sóc sức khỏe chất lượng
+
+    script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js")
+    script(src="/js/doctor.js")
