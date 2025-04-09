@@ -1,40 +1,54 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
-include ../../mixins/select-tree.pug
+
 block head 
   link(rel='stylesheet', href='/admin/css/form.css')
+
 block main
   +alert-error(expressFlash,5000)
   +alert-success(expressFlash,5000)
-  h1(class="mb-4") Thêm Mới Chuyên Khoa
   
-  form(action=`${prefixAdmin}/specialties/create` method="POST" enctype="multipart/form-data")
+  h1(class="mb-4") Chỉnh Sửa Phòng Khám
+  
+  form(action=`${prefixAdmin}/clinics/edit/${record.slug}?_method=PATCH` method="POST" enctype="multipart/form-data")
     .card.mb-4.shadow-sm
       .card-header.bg-primary.text-white
-        h5.mb-0 Thông Tin Chuyên Khoa
+        h5.mb-0 Thông Tin Phòng Khám
       .card-body
         .row
-          .col-md-12.mb-3
+          .col-md-6.mb-3
             div(class="form-group")
-              label(for="name") Tên Chuyên Khoa *
+              label(for="name") Tên Phòng Khám *
               input(
                 type="text"
                 class="form-control"
                 id="name"
                 name="name"
+                value=record.name
                 required
               )
           
-          .col-md-12.mb-3  
+          .col-md-6.mb-3
             div(class="form-group")
-              label(for="description") Mô Tả *
+              label(for="address") Địa Chỉ *
+              input(
+                type="text"
+                class="form-control"
+                id="address"
+                name="address"
+                value=record.address
+                required
+              )
+          
+          .col-md-12.mb-3
+            div(class="form-group")
+              label(for="description") Mô Tả
               textarea(
                 class="form-control textarea-mce"
                 id="description"
                 name="description"
-                rows="6"
-                required
-              )
+                rows="5"
+              )= record.description
           
           .col-md-6.mb-3
             div(class="form-group")
@@ -47,7 +61,7 @@ block main
                     id="statusActive"
                     name="status"
                     value="active"
-                    checked
+                    checked=record.status === "active"
                   )
                   label(for="statusActive" class="form-check-label") Hoạt động
                 
@@ -58,6 +72,7 @@ block main
                     id="statusInactive"
                     name="status"
                     value="inactive"
+                    checked=record.status === "inactive"
                   )
                   label(for="statusInactive" class="form-check-label") Không hoạt động
           
@@ -74,7 +89,7 @@ block main
               )
               div.d-flex.align-items-center.mt-2
                 img(
-                  src=""
+                  src=record.avatar || ""
                   class="image-preview me-3"
                   upload-image-preview
                   style="max-width: 200px; max-height: 200px;"
@@ -86,14 +101,10 @@ block main
                 ) Hủy
     
     .d-flex.justify-content-between.mt-4
-      a.btn.btn-secondary(href=`${prefixAdmin}/specialties`)
+      a.btn.btn-secondary(href=`${prefixAdmin}/clinics`)
         i.fas.fa-arrow-left.me-1
         | Quay Lại
       
       button(type="submit" class="btn btn-primary")
         i.fas.fa-save.me-1
-        | Tạo Mới
-
-
-
-
+        | Lưu Thay Đổi

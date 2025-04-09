@@ -3,35 +3,34 @@ const Doctor = require("../../models/doctor.model");
 const User = require("../../models/user.model");
 const AllCode = require("../../models/allcode.model");
 const { sendMail } = require("../../helpers/sendMail");
-
+const Schedule = require("../../models/schedule.model");
 // [GET] /api/bookings
 module.exports.index = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    // Chạy song song hai truy vấn
     const [bookings, allCodes] = await Promise.all([
       Booking.find({ patientId: userId })
         .populate({
           path: "doctorId",
           populate: [{ path: "userId" }, { path: "clinics" }],
         })
-        .populate("scheduleId"),
+        .populate("scheduleId")
+        .sort({ createdAt: -1 }),
       AllCode.find(),
     ]);
 
-    // Tạo object lookup để lấy valueVi nhanh hơn
     const allCodesMap = Object.fromEntries(
       allCodes.map((code) => [code.type, code.valueVi])
     );
 
-    // Ánh xạ lại bookings với thông tin từ allCodesMap
     const result = bookings.map((booking) => ({
       ...booking.toObject(),
       scheduleId: {
         ...booking.scheduleId?.toObject(),
         time: allCodesMap[booking.scheduleId?.timeType],
       },
+      status: allCodesMap[booking.statusId],
     }));
 
     res.json(result);
@@ -61,6 +60,7 @@ module.exports.show = async (req, res) => {
         ...booking.scheduleId?.toObject(),
         time: allCodesMap[booking.scheduleId?.timeType],
       },
+      status: allCodesMap[booking.statusId],
     };
     res.json(result);
   } catch (error) {
@@ -75,6 +75,17 @@ module.exports.create = async (req, res) => {
     const { email, fullname, phone, address, birthyear, gender, reasons } =
       req.body.info;
     const { doctor_slug, schedule_id } = req.body;
+    // const existingBooking = await Booking.findOne({
+    //   scheduleId: schedule_id,
+    //   patientId: req.user.id,
+    // });
+    // if (existingBooking) {
+    //   return res.status(400).json({ message: "Bạn đã đặt lịch này rồi!" });
+    // }
+    const maxNumber = await Schedule.findById(schedule_id);
+    if (maxNumber.currentNumber >= maxNumber.maxNumber) {
+      return res.status(400).json({ message: "Lịch đã đủ số lượng!" });
+    }
     const doctor = await Doctor.findOne().populate({
       path: "userId",
       match: { slug: doctor_slug },
@@ -96,6 +107,9 @@ module.exports.create = async (req, res) => {
       },
     });
     await booking.save();
+    await Schedule.findByIdAndUpdate(schedule_id, {
+      $inc: { currentNumber: 1 },
+    });
     res.json(booking);
   } catch (error) {
     res.status(500).json({ message: error.message });

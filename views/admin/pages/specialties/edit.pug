@@ -1,103 +1,98 @@
 extends ../../layouts/default.pug
-include ../../mixins/fillter-status.pug
-include ../../mixins/search.pug
-include ../../mixins/pagination.pug
-include ../../mixins/form-change-multi.pug
 include ../../mixins/alert.pug
-include ../../mixins/sort.pug
-include ../../mixins/table-tree.pug
-include ../../mixins/filter-date.pug
+
 block head 
-  link(rel='stylesheet', href='/admin/css/product.css')
+  link(rel='stylesheet', href='/admin/css/form.css')
 block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
   
-    +alert-error(expressFlash,5000)
-    +alert-success(expressFlash,5000) 
-    h1 Danh Sách Chuyên Khoa
-    .row
-      .col-md-12
-        .card.mb-3
-          .card-header Bộ Lọc và Tìm Kiếm
-          .card-body
-            .row
-              .col-3
-                +fillter-status(fillterStatus)
-              .col-7
-                +search(keywords)
-              .col-2.text-right
-                a.mr-2(
-                  class = 'btn btn-primary btn-sm'
-                  href=`${prefixAdmin}/specialties/create`
-                ) + Thêm mới  
-        .card
-          .card-header
-            .row
-              .col-6
-                .card-title Danh Sách Chuyên Khoa
-          .card-body
-            if records.length > 0
-              table.table.table-hover.table-sm
-                thead
-                  tr
-                    th STT
-                    th Ảnh Đại Diện
-                    th Tên Chuyên Khoa        
-                    th Trạng Thái
-                    th Hành Động
-                tbody
-                  each record, index in records
-                    tr
-                      td= index + 1
-                      td 
-                        img(src=record.avatar, alt='Avatar', width='80px')
-                      td= record.name
-                      td 
-                        if (record.status=="active")
-                          a(
-                            href="javascript:" 
-                            class="badge  badge-secondary"
-                            button-change-status 
-                            data-id=record.id 
-                            data-status=record.status                    
-                          ) Hoạt Động
-                        else 
-                          a(
-                            href="javascript:" 
-                            class="badge badge-danger"
-                            button-change-status 
-                            data-id=record.id 
-                            data-status=record.status
-                          ) Ngừng Hoạt Động
-                      td
-                        a(
-                          class = 'btn btn-secondary btn-sm'
-                          href=`${prefixAdmin}/specialties/detail/${record.slug}`
-                        ) 
-                          i.fas.fa-eye.mr-1
-                      
-                        a(
-                          class = 'btn btn-warning btn-sm ml-1'
-                          href=`${prefixAdmin}/specialties/edit/${record.slug}`
-                        ) 
-                          i.fas.fa-edit.mr-1
-                      
-                        button(
-                          class = 'btn btn-danger btn-sm ml-1'
-                          button-delete
-                          data-id=record.id
-                        ) 
-                          i.fas.fa-trash-alt.mr-1
-            else
-              p Không có dữ liệu
-    form(
-      action="" 
-      method="POST"
-      id="formChangeStatus"
-      path=`${prefixAdmin}/records/change-status`
-      )
-    form(
-      action="" 
-      method="POST"
-      id="formDeleteItem"
-      path=`${prefixAdmin}/records/delete`
-      )
+  h1(class="mb-4") Chỉnh Sửa Chuyên Khoa
+  
+  form(action=`${prefixAdmin}/specialties/edit/${record.slug}?_method=PATCH` method="POST" enctype="multipart/form-data")
+    .card.mb-4.shadow-sm
+      .card-header.bg-primary.text-white
+        h5.mb-0 Thông Tin Chuyên Khoa
+      .card-body
+        .row
+          .col-md-12.mb-3
+            div(class="form-group")
+              label(for="name") Tên Chuyên Khoa *
+              input(
+                type="text"
+                class="form-control"
+                id="name"
+                name="name"
+                value=record.name
+                required
+              )
+          
+          .col-md-12.mb-3
+            div(class="form-group")
+              label(for="description") Mô Tả *
+              textarea(
+                class="form-control textarea-mce"
+                id="description"
+                name="description"
+                rows="6"
+                required
+              )= record.description
+          
+          .col-md-6.mb-3
+            div(class="form-group")
+              label Trạng Thái *
+              .d-flex
+                div(class="form-check me-3")
+                  input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusActive"
+                    name="status"
+                    value="active"
+                    checked=record.status === "active"
+                  )
+                  label(for="statusActive" class="form-check-label") Hoạt động
+                
+                div(class="form-check")
+                  input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusInactive"
+                    name="status"
+                    value="inactive"
+                    checked=record.status === "inactive"
+                  )
+                  label(for="statusInactive" class="form-check-label") Không hoạt động
+          
+          .col-md-12.mb-3
+            div(class="form-group" upload-image)
+              label(for="avatar") Ảnh Đại Diện
+              input(
+                type="file"
+                class="form-control-file"
+                id="avatar"
+                name="avatar"
+                accept="image/*"
+                upload-image-input
+              )
+              div.d-flex.align-items-center.mt-2
+                img(
+                  src=record.avatar || ""
+                  class="image-preview me-3"
+                  upload-image-preview
+                  style="max-width: 200px; max-height: 200px;"
+                )
+                button(
+                  type="button"
+                  class="btn btn-danger btn-sm cancel-image-button"
+                  cancel-image-button
+                ) Hủy
+    
+    .d-flex.justify-content-between.mt-4
+      a.btn.btn-secondary(href=`${prefixAdmin}/specialties`)
+        i.fas.fa-arrow-left.me-1
+        | Quay Lại
+      
+      button(type="submit" class="btn btn-primary")
+        i.fas.fa-save.me-1
+        | Lưu Thay Đổi

@@ -14,9 +14,21 @@ module.exports.login = async (req, res) => {
     const isMatch = await comparePassword(password, user.password);
     if (!isMatch)
       return res.status(401).json({ message: "Mật khẩu không đúng" });
-
-    const token = generateToken(user, "7d");
-    res.json({ token, user });
+    const refreshToken = generateToken(user, "7d");
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "Strict",
+    });
+    const token = generateToken(user, "15m");
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 15 * 60 * 1000,
+      sameSite: "Strict",
+    });
+    res.json({ user });
   } catch (error) {
     res.status(500).json({ message: "Lỗi máy chủ" });
   }
@@ -65,10 +77,20 @@ module.exports.registerOtp = async (req, res) => {
     user.password = await hashPassword(user.password);
     user.role_id = "R3";
     await user.save();
-
-    const token = generateToken(user, "7d");
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "Strict",
+    });
+    const token = generateToken(user, "15m");
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 15 * 60 * 1000,
+      sameSite: "Strict",
+    });
     res.json({
-      token,
       user,
     });
   } catch (error) {
@@ -140,12 +162,33 @@ module.exports.forgotPasswordReset = async (req, res) => {
       { email: email },
       { password: await hashPassword(password) }
     );
+    res.cookie("refresh_token", refreshToken, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 ngày
+      sameSite: "Strict",
+    });
     const user = await User.findOne({ email });
-    const token = generateToken(user, "7d");
+    const token = generateToken(user, "15m");
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      maxAge: 15 * 60 * 1000, // 15 phút
+      sameSite: "Strict",
+    });
     res.json({
-      token,
       user,
     });
+  } catch (error) {
+    res.status(500).json({ message: "Lỗi máy chủ" });
+  }
+};
+// [POST] /api/auth/logout
+module.exports.logout = async (req, res) => {
+  try {
+    res.clearCookie("refresh_token");
+    res.clearCookie("token");
+    res.json({ message: "Đăng xuất thành công" });
   } catch (error) {
     res.status(500).json({ message: "Lỗi máy chủ" });
   }

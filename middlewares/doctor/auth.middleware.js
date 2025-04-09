@@ -15,13 +15,19 @@ const authMiddleware = async (req, res, next) => {
   try {
     decoded = verifyToken(accessToken);
     req.user = await User.findById(decoded.id);
-    req.doctor = await Doctor.findOne({ userId: req.user._id });
+    req.doctor = await Doctor.findOne({ userId: req.user._id })
+      .populate("clinics")
+      .populate("specialties");
+
     next();
   } catch (err) {
     if (refreshToken) {
       try {
         const decodedRefresh = verifyToken(refreshToken);
         req.user = await User.findById(decodedRefresh.id);
+        req.doctor = await Doctor.findOne({ userId: req.user._id })
+          .populate("clinics")
+          .populate("specialties");
         const newAccessToken = generateToken(req.user, "15m");
         res.cookie("access_token", newAccessToken, {
           httpOnly: true,

@@ -1,8 +1,20 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
 include ../../mixins/moment.pug
+
 block head 
   link(rel='stylesheet', href='/admin/css/product.css')
+  style.
+    .info-label {
+      font-weight: bold;
+    }
+    .patient-info, .appointment-info {
+      background-color: #f8f9fa;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
 block main
   if(role.permissions.includes('letter_view'))
   
@@ -107,16 +119,105 @@ block main
       href=`${prefixAdmin}/dashboard`
     ) Quay lại trang chủ                 
               
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  
+  h1(class="mb-4") Chi Tiết Lịch Hẹn
+  
+  .card.mb-4.shadow-sm
+    .card-header.bg-primary.text-white
+      h5.mb-0
+        i.fas.fa-calendar-check.me-2
+        | Thông Tin Lịch Hẹn ##{booking._id.toString().substr(-6)}
+    .card-body
+      .row
+        .col-md-6
+          .patient-info
+            h5.mb-3 Thông Tin Bệnh Nhân
+            .row
+              .col-md-6.mb-2
+                span.info-label Họ tên: 
+                span #{booking.patientId.fullname || booking.info.fullname}
+              .col-md-6.mb-2
+                span.info-label Email: 
+                span #{booking.patientId.email || booking.info.email}
+              .col-md-6.mb-2
+                span.info-label Số điện thoại: 
+                span #{booking.patientId.phone || booking.info.phone}
+              .col-md-6.mb-2
+                span.info-label Năm sinh: 
+                span #{booking.info.birthyear || 'Không có'}
+              .col-md-12.mb-2
+                span.info-label Địa chỉ: 
+                span #{booking.info.address || 'Không có'}
+              .col-md-12.mb-2
+                span.info-label Lý do khám: 
+                p.mt-1 #{booking.info.reasons || 'Không có'}
+        
+        .col-md-6
+          .appointment-info
+            h5.mb-3 Thông Tin Bác Sĩ
+            .row
+              .col-md-12.mb-2
+                span.info-label Bác sĩ: 
+                span #{booking.doctorId.userId.fullname}
+              .col-md-12.mb-2
+                span.info-label Phòng khám: 
+                span #{booking.doctorId.clinics ? booking.doctorId.clinics.name : 'Chưa cập nhật'}
+              .col-md-6.mb-2
+                span.info-label Ngày khám: 
+                span 
+                  +formatDate(booking.scheduleId.date)
+              .col-md-6.mb-2
+                span.info-label Thời gian: 
+                span #{booking.scheduleId.time}
+      
+      .row.mt-4
+        .col-md-6
+          h5.mb-3 Trạng Thái Lịch Hẹn
+          .d-flex.align-items-center
+            span.badge.p-2(class=booking.statusId === 'S1' ? 'bg-warning' : (booking.statusId === 'S2' ? 'bg-success' : 'bg-danger'))
+              | #{booking.status}
+            form.ms-3(action=`${prefixAdmin}/bookings/status/${booking._id}?_method=PATCH` method="POST")
+              .input-group
+                select.form-select(name="statusId" required)
+                  option(value="" disabled selected) Thay đổi trạng thái
+                  each option in statusOptions
+                    option(value=option.type, selected=booking.statusId === option.type) #{option.valueVi}
+                button.btn.btn-primary(type="submit") Cập nhật
+        
+        .col-md-6
+          h5.mb-3 Thông Tin Khác
+          .row
+            .col-md-6.mb-2
+              span.info-label Đã đặt vào: 
+              span 
+                +formatDateTime(booking.createdAt)
+            .col-md-6.mb-2
+              span.info-label Cập nhật lần cuối: 
+              span 
+                +formatDateTime(booking.updatedAt)
+  
+  .mt-4.d-flex.justify-content-between
+    a.btn.btn-secondary(href=`${prefixAdmin}/bookings`)
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại
+    
+    button.btn.btn-danger(type="button" data-bs-toggle="modal" data-bs-target="#deleteModal")
+      i.fas.fa-trash-alt.me-1
+      | Xóa
 
-                
-                  
-              
-            //- a(
-            //-   href="javascript:"
-            //-   class="btn btn-warning"
-            //-   button-change-status
-            //-   data-id=letter.id
-            //-   data-status=letter.status
-            //- ) Đổi trạng thái
+  // Delete Confirmation Modal
+  #deleteModal.modal.fade(tabindex="-1")
+    .modal-dialog
+      .modal-content
+        .modal-header.bg-danger.text-white
+          h5.modal-title Xác Nhận Xóa
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          p Bạn có chắc chắn muốn xóa lịch hẹn này không? Hành động này không thể hoàn tác.
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Hủy
+          form(action=`${prefixAdmin}/bookings/delete/${booking._id}?_method=DELETE` method="POST" style="display: inline-block;")
+            button.btn.btn-danger(type="submit") Xóa
 
-            

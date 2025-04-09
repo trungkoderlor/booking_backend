@@ -1,7 +1,6 @@
 const Booking = require("../../models/booking.model");
-const Schedule = require("../../models/schedule.model");
 const AllCode = require("../../models/allcode.model");
-
+const systemConfig = require("../../config/system");
 module.exports.viewBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({ doctorId: req.doctor._id })
@@ -17,7 +16,6 @@ module.exports.viewBookings = async (req, res) => {
       time: allCodesMap[booking.scheduleId.timeType],
       status: allCodesMap[booking.statusId],
     }));
-    console.log(result);
     res.render("doctor/pages/booking/index", {
       pageTitle: "Danh Sách Lịch Hẹn",
       bookings: result,
@@ -30,7 +28,7 @@ module.exports.viewBookings = async (req, res) => {
   } catch (error) {
     console.error(error);
     req.flash("error", "Đã xảy ra lỗi khi tải danh sách lịch hẹn!");
-    res.redirect(`${prefixDoctor}/dashboard`);
+    res.redirect(`${systemConfig.prefixDoctor}/dashboard`);
   }
 };
 
@@ -45,7 +43,7 @@ module.exports.viewBookingDetail = async (req, res) => {
         "error",
         "Không tìm thấy lịch hẹn hoặc bạn không có quyền xem!"
       );
-      return res.redirect(`${prefixDoctor}/booking`);
+      return res.redirect(`${systemConfig.prefixDoctor}/booking`);
     }
     statusCodes = await AllCode.find({ key: "status" });
     const allCodes = await AllCode.find();
@@ -69,7 +67,7 @@ module.exports.viewBookingDetail = async (req, res) => {
   } catch (error) {
     console.error(error);
     req.flash("error", "Đã xảy ra lỗi khi tải chi tiết lịch hẹn!");
-    res.redirect(`${prefixDoctor}/booking`);
+    res.redirect(`${systemConfig.prefixDoctor}/booking`);
   }
 };
 
@@ -83,14 +81,14 @@ module.exports.updateBookingStatus = async (req, res) => {
         "error",
         "Không tìm thấy lịch hẹn hoặc bạn không có quyền cập nhật!"
       );
-      return res.redirect(`${prefixDoctor}/booking`);
+      return res.redirect(`${systemConfig.prefixDoctor}/booking`);
     }
 
     booking.statusId = status;
     await booking.save();
 
     req.flash("success", "Cập nhật trạng thái lịch hẹn thành công!");
-    res.redirect(`${prefixDoctor}/booking/${req.params.id}`);
+    res.redirect(`${systemConfig.prefixDoctor}/booking/${req.params.id}`);
   } catch (error) {
     console.error(error);
     req.flash("error", "Đã xảy ra lỗi khi cập nhật trạng thái lịch hẹn!");

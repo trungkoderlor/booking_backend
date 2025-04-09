@@ -1,0 +1,103 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/moment.pug
+
+block head 
+  link(rel='stylesheet', href='/admin/css/product.css')
+  style.
+    .post-content {
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 15px;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+    }
+    .post-image {
+      max-height: 300px;
+      object-fit: cover;
+    }
+
+block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  
+  h1(class="mb-4") Chi Tiết Bài Viết
+  
+  .card.mb-4.shadow-sm
+    .card-header.bg-primary.text-white
+      h5.mb-0
+        i.fas.fa-newspaper.me-2
+        | #{record.title}
+    .card-body
+      .row.mb-4
+        .col-md-4.text-center.mb-3.mb-md-0
+          if record.poster
+            img.img-fluid.rounded.post-image(src=record.poster, alt="Ảnh bài viết")
+          else
+            img.img-fluid.rounded.post-image(src="/uploads/default-post.png", alt="Ảnh mặc định")
+        .col-md-8
+          .row
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Tiêu Đề:
+                p.form-control-static #{record.title}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Đường Dẫn:
+                p.form-control-static #{record.slug}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Tác Giả:
+                p.form-control-static #{author ? author.fullname : 'Không rõ'}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Trạng Thái:
+                p.form-control-static
+                  span.badge(class=record.status === "published" ? "bg-success" : "bg-warning")
+                    | #{record.status === "published" ? "Công khai" : "Nháp"}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Ngày Tạo:
+                p.form-control-static
+                  +formatDateTime(record.createdAt)
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Cập Nhật Lần Cuối:
+                p.form-control-static
+                  +formatDateTime(record.updatedAt)
+            .col-md-12.mb-3
+              .form-group
+                label.fw-bold Mô Tả Ngắn:
+                p.form-control-static #{record.shortDescription}
+      
+      .row
+        .col-12
+          label.fw-bold Nội Dung Chi Tiết:
+          .post-content!= record.content
+  
+  .mt-4.d-flex.justify-content-between
+    a.btn.btn-secondary(href=`${prefixAdmin}/posts`)
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại
+    .btn-group
+      a.btn.btn-warning(href=`${prefixAdmin}/posts/edit/${record.slug}`)
+        i.fas.fa-edit.me-1
+        | Chỉnh Sửa
+      button.btn.btn-danger(type="button" data-bs-toggle="modal" data-bs-target="#deleteModal")
+        i.fas.fa-trash-alt.me-1
+        | Xóa
+
+  // Delete Confirmation Modal
+  #deleteModal.modal.fade(tabindex="-1")
+    .modal-dialog
+      .modal-content
+        .modal-header.bg-danger.text-white
+          h5.modal-title Xác Nhận Xóa
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          p Bạn có chắc chắn muốn xóa bài viết này không? Hành động này không thể hoàn tác.
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Hủy
+          form(action=`${prefixAdmin}/posts/delete/${record._id}?_method=DELETE` method="POST" style="display: inline-block;")
+            button.btn.btn-danger(type="submit") Xóa

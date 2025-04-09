@@ -1,0 +1,92 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/moment.pug
+
+block head 
+  link(rel='stylesheet', href='/admin/css/product.css')
+  link(rel='stylesheet', href='/admin/css/user-detail.css')
+
+block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  
+  h1(class="mb-4") Chi Tiết Người Dùng
+  
+  .card.mb-4.shadow-sm
+    .card-header.bg-primary.text-white
+      h5.mb-0
+        i.fas.fa-user.me-2
+        | Thông Tin Cá Nhân
+    .card-body
+      .row
+        .col-md-3.text-center.mb-3.mb-md-0
+          if user.avatar
+            img.img-thumbnail.rounded-circle(src=user.avatar, alt="Avatar", style="width: 150px; height: 150px;")
+          else
+            img.img-thumbnail.rounded-circle(src="/uploads/default-avatar.png", alt="Default Avatar", style="width: 150px; height: 150px;")
+        .col-md-9
+          .row
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Họ Và Tên:
+                p.form-control-static #{user.fullname}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Email:
+                p.form-control-static #{user.email}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Số Điện Thoại:
+                p.form-control-static #{user.phone || "Chưa cập nhật"}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Địa Chỉ:
+                p.form-control-static #{user.address || "Chưa cập nhật"}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Vai Trò:
+                p.form-control-static 
+                  span.badge(class=user.role_id === "R1" ? "bg-danger" : (user.role_id === "R2" ? "bg-primary" : "bg-success"))
+                    | #{role ? role.valueVi : user.role_id}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Trạng Thái:
+                p.form-control-static
+                  span.badge(class=user.status === "active" ? "bg-success" : "bg-danger")
+                    | #{user.status === "active" ? "Hoạt động" : "Không hoạt động"}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Ngày Tạo:
+                p.form-control-static
+                  +formatDateTime(user.createdAt)
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Cập Nhật Lần Cuối:
+                p.form-control-static
+                  +formatDateTime(user.updatedAt)
+  
+  .mt-4.d-flex.justify-content-between
+    a.btn.btn-secondary(href=`${prefixAdmin}/users`)
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại
+    .btn-group
+      a.btn.btn-warning(href=`${prefixAdmin}/users/edit/${user.id}`)
+        i.fas.fa-edit.me-1
+        | Chỉnh Sửa
+      button.btn.btn-danger(type="button" data-bs-toggle="modal" data-bs-target="#deleteModal")
+        i.fas.fa-trash-alt.me-1
+        | Xóa
+
+  // Delete Confirmation Modal
+  #deleteModal.modal.fade(tabindex="-1")
+    .modal-dialog
+      .modal-content
+        .modal-header.bg-danger.text-white
+          h5.modal-title Xác Nhận Xóa
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          p Bạn có chắc chắn muốn xóa người dùng này không? Hành động này không thể hoàn tác.
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Hủy
+          form(action=`${prefixAdmin}/users/delete/${user.id}?_method=DELETE` method="POST" style="display: inline-block;")
+            button.btn.btn-danger(type="submit") Xóa

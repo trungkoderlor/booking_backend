@@ -1,103 +1,97 @@
 extends ../../layouts/default.pug
+include ../../mixins/alert.pug
 include ../../mixins/fillter-status.pug
 include ../../mixins/search.pug
-include ../../mixins/pagination.pug
-include ../../mixins/form-change-multi.pug
-include ../../mixins/alert.pug
-include ../../mixins/sort.pug
-include ../../mixins/table-tree.pug
-include ../../mixins/filter-date.pug
+
 block head 
   link(rel='stylesheet', href='/admin/css/product.css')
 block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  h1(class="mb-4") Danh Sách Chuyên Khoa
   
-    +alert-error(expressFlash,5000)
-    +alert-success(expressFlash,5000) 
-    h1 Danh Sách Chuyên Khoa
-    .row
-      .col-md-12
-        .card.mb-3
-          .card-header Bộ Lọc và Tìm Kiếm
-          .card-body
-            .row
-              .col-3
-                +fillter-status(fillterStatus)
-              .col-7
-                +search(keywords)
-              .col-2.text-right
-                a.mr-2(
-                  class = 'btn btn-primary btn-sm'
-                  href=`${prefixAdmin}/specialties/create`
-                ) + Thêm mới  
-        .card
-          .card-header
-            .row
-              .col-6
-                .card-title Danh Sách Chuyên Khoa
-          .card-body
-            if records.length > 0
-              table.table.table-hover.table-sm
-                thead
-                  tr
-                    th STT
-                    th Ảnh Đại Diện
-                    th Tên Chuyên Khoa        
-                    th Trạng Thái
-                    th Hành Động
-                tbody
-                  each record, index in records
-                    tr
-                      td= index + 1
-                      td 
-                        img(src=record.avatar, alt='Avatar', width='80px')
-                      td= record.name
-                      td 
-                        if (record.status=="active")
-                          a(
-                            href="javascript:" 
-                            class="badge  badge-secondary"
-                            button-change-status 
-                            data-id=record.id 
-                            data-status=record.status                    
-                          ) Hoạt Động
-                        else 
-                          a(
-                            href="javascript:" 
-                            class="badge badge-danger"
-                            button-change-status 
-                            data-id=record.id 
-                            data-status=record.status
-                          ) Ngừng Hoạt Động
-                      td
-                        a(
-                          class = 'btn btn-secondary btn-sm'
-                          href=`${prefixAdmin}/specialties/detail/${record.slug}`
-                        ) 
-                          i.fas.fa-eye.mr-1
-                      
-                        a(
-                          class = 'btn btn-warning btn-sm ml-1'
-                          href=`${prefixAdmin}/specialties/edit/${record.slug}`
-                        ) 
-                          i.fas.fa-edit.mr-1
-                      
-                        button(
-                          class = 'btn btn-danger btn-sm ml-1'
-                          button-delete
-                          data-id=record.id
-                        ) 
-                          i.fas.fa-trash-alt.mr-1
-            else
-              p Không có dữ liệu
-    form(
-      action="" 
-      method="POST"
-      id="formChangeStatus"
-      path=`${prefixAdmin}/records/change-status`
-      )
-    form(
-      action="" 
-      method="POST"
-      id="formDeleteItem"
-      path=`${prefixAdmin}/records/delete`
-      )
+  .card.mb-3
+    .card-header 
+      .row
+        .col-6
+          i.fas.fa-stethoscope.mr-1
+          | Danh sách chuyên khoa
+        .col-6.text-right
+          a.mr-2(
+            class = 'btn btn-primary btn-sm'
+            href=`${prefixAdmin}/specialties/create`
+          ) + Thêm mới
+      .row.mt-4(style="padding-top:15px;border-top: 1px solid #ccc;")
+        .col-5
+          +fillter-status(fillterStatus)
+        .col-7
+          +search(keywords)
+          
+    .card-body
+      if records.length > 0
+        table.table.table-hover.table-sm
+          thead
+            tr
+              th STT
+              th Ảnh Đại Diện
+              th Tên Chuyên Khoa        
+              th Trạng Thái
+              th Hành Động
+          tbody
+            each record, index in records
+              tr
+                td= index + 1
+                td 
+                  img(src=record.avatar, alt='Avatar', width='80px')
+                td= record.name
+                td 
+                  if (record.status=="active")
+                    a(
+                      href="javascript:" 
+                      class="badge badge-success"
+                      button-change-status 
+                      data-id=record._id 
+                      data-status=record.status                    
+                    ) Hoạt Động
+                  else 
+                    a(
+                      href="javascript:" 
+                      class="badge badge-danger"
+                      button-change-status 
+                      data-id=record._id 
+                      data-status=record.status
+                    ) Ngừng Hoạt Động
+                td
+                  a(
+                    class = 'btn btn-secondary btn-sm'
+                    href=`${prefixAdmin}/specialties/detail/${record.slug}`
+                  ) 
+                    i.fas.fa-eye.mr-1
+                
+                  a(
+                    class = 'btn btn-warning btn-sm ml-1'
+                    href=`${prefixAdmin}/specialties/edit/${record.slug}`
+                  ) 
+                    i.fas.fa-edit.mr-1
+                
+                  button(
+                    class = 'btn btn-danger btn-sm ml-1'
+                    button-delete
+                    data-id=record._id
+                  ) 
+                    i.fas.fa-trash-alt.mr-1
+      else
+        p Không có dữ liệu
+  
+  form(
+    action="" 
+    method="POST"
+    id="formChangeStatus"
+    path=`${prefixAdmin}/specialties/change-status`
+  )
+  form(
+    action="" 
+    method="POST"
+    id="formDeleteItem"
+    path=`${prefixAdmin}/specialties/delete`
+  )

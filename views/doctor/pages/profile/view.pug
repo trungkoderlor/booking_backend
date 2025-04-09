@@ -62,16 +62,25 @@ block content
               | Số Điện Thoại
             div.col-sm-8 #{user.phone}
           
-          if user.doctor.specialty
+          if user.doctor.specialties.length >0 && user.doctor.specialties
             div.row.mb-3
               div.col-sm-4.text-muted
                 i.fas.fa-stethoscope.me-2
                 | Chuyên Khoa
-              div.col-sm-8 #{user.doctor.specialty}
-          
-          if user.doctor.experience
+              div.col-sm-8
+                each specialty, index in user.doctor.specialties
+                  span.badge.bg-light.text-dark #{specialty.name}#{index < user.doctor.specialties.length - 1 ? ', ' : ''}
+          if user.doctor.clinics
             div.row.mb-3
               div.col-sm-4.text-muted
-                i.fas.fa-briefcase.me-2
-                | Kinh Nghiệm
-              div.col-sm-8 #{user.doctor.experience} năm
+                i.fas.fa-hospital.me-2
+                | Phòng Khám
+              div.col-sm-8
+                span.badge.bg-light.text-dark #{user.doctor.clinics.name}
+          div.row.mb-3
+            div.col-sm-4.text-muted
+              i.fas.fa-info-circle.me-2
+              | Giới Thiệu
+            div.col-sm-8 !{user.doctor.description}
+
+

@@ -22,6 +22,7 @@ app.use(express.static(`${__dirname}/public`));
 app.use(methodOverride("_method")); //override method
 app.use(bodyParser.urlencoded({ extended: false })); //dung du lieu cua form, req.body
 const port = process.env.PORT;
+const fePort = process.env.FE_PORT;
 database.connect();
 //flash
 app.use(cookieParser("secret"));
@@ -35,7 +36,12 @@ app.use(
 );
 app.use(flash());
 //end flash
-
+//tinymce
+app.use(
+  "/tinymce",
+  express.static(path.join(__dirname, "node_modules", "tinymce"))
+);
+//end tinymce
 //pug
 app.set("views", "./views");
 app.set("views", `${__dirname}/views`);
@@ -43,7 +49,12 @@ app.set("view engine", "pug");
 //end pug
 // Middleware
 app.use(express.json());
-app.use(cors()); // Cho phép React truy cập API
+app.use(
+  cors({
+    origin: `http://localhost:${fePort}`,
+    credentials: true,
+  })
+); // Cho phép React truy cập API
 //public
 app.use(express.static("public"));
 app.use(express.static(`${__dirname}/public`));

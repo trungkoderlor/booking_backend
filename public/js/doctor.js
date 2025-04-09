@@ -1,6 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
   console.log("Doctor JS loaded");
 
+  // Load TinyMCE configuration if editor exists
+  if (document.querySelector(".tinymce-editor")) {
+    // Load TinyMCE configuration
+    const script = document.createElement("script");
+    script.src = "/js/tinymce-config.js";
+    document.head.appendChild(script);
+  }
+
   // Initialize tooltips
   const tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')

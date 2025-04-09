@@ -1,0 +1,198 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/select-tree.pug
+
+block head 
+  link(rel='stylesheet', href='/admin/css/form.css')
+
+block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  
+  h1(class="mb-4") Chỉnh Sửa Người Dùng
+  
+  form(action=`${prefixAdmin}/users/edit/${user.id}?_method=PATCH` method="POST" enctype="multipart/form-data")
+    .card.mb-4.shadow-sm
+      .card-header.bg-primary.text-white
+        h5.mb-0 Thông Tin Cơ Bản
+      .card-body
+        .row
+          .col-md-6
+            div(class="form-group")
+              label(for="fullname") Họ tên *
+              input(
+                type="text"
+                class="form-control"
+                id="fullname"
+                name="fullname"
+                value=user.fullname
+                required
+              )
+          
+          .col-md-6      
+            div(class="form-group")
+              label(for="email") Email *
+              input(
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                value=user.email
+                required
+              )
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="phone") Số điện thoại
+              input(
+                type="text"
+                class="form-control"
+                id="phone"
+                name="phone"
+                value=user.phone
+              )
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="address") Địa chỉ
+              input(
+                type="text"
+                class="form-control"
+                id="address"
+                name="address"
+                value=user.address
+              )
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="role_id") Vai trò *
+              select(
+                class="form-control"
+                id="role_id"
+                name="role_id"
+                required
+                onchange="toggleDoctorFields(this.value)"
+              )
+                option(value="" disabled) -- Chọn vai trò --
+                each role in roles
+                  option(
+                    value=role.type
+                    selected=user.role_id === role.type
+                  ) #{role.valueVi}
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="status") Trạng thái *
+              .d-flex
+                div(class="form-check me-3")
+                  input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusActive"
+                    name="status"
+                    value="active"
+                    checked=user.status === "active"
+                  )
+                  label(for="statusActive" class="form-check-label") Hoạt động
+                
+                div(class="form-check")
+                  input(
+                    type="radio"
+                    class="form-check-input"
+                    id="statusInactive"
+                    name="status"
+                    value="inactive"
+                    checked=user.status === "inactive"
+                  )
+                  label(for="statusInactive" class="form-check-label") Không hoạt động
+          
+          .col-md-12
+            div(class="form-group" upload-image)
+              label(for="avatar") Ảnh đại diện
+              input(
+                type="file"
+                class="form-control-file"
+                id="avatar"
+                name="avatar"
+                accept="image/*"
+                upload-image-input
+              )
+              div.d-flex.align-items-center.mt-2
+                img(
+                  src=user.avatar || ""
+                  class="image-preview me-3"
+                  upload-image-preview
+                  style="max-width: 150px; max-height: 150px;"
+                )
+                button(
+                  type="button"
+                  class="btn btn-danger btn-sm cancel-image-button"
+                  cancel-image-button
+                ) Hủy
+
+    #doctorSection.card.mb-4.shadow-sm(style=user.role_id === "R2" ? "" : "display: none;")
+      .card-header.bg-info.text-white
+        h5.mb-0 Thông Tin Bác Sĩ
+      .card-body
+        .row
+          .col-md-12
+            div(class="form-group")
+              label(for="description") Mô tả
+              textarea(
+                class="form-control"
+                id="description"
+                name="description"
+                rows="4"
+              )= doctor ? doctor.description : ""
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="specialty") Chuyên khoa
+              select(
+                class="form-control"
+                id="specialty"
+                name="specialty"
+                multiple
+              )
+                option(value="" disabled) -- Chọn chuyên khoa --
+                each specialty in specialties
+                  - var isSelected = doctor && doctor.specialties && doctor.specialties.some(s => s.toString() === specialty._id.toString())
+                  option(
+                    value=specialty._id
+                    selected=isSelected
+                  ) #{specialty.name}
+          
+          .col-md-6
+            div(class="form-group")
+              label(for="clinic") Phòng khám
+              select(
+                class="form-control"
+                id="clinic"
+                name="clinic"
+              )
+                option(value="" disabled selected=!doctor || !doctor.clinics) -- Chọn phòng khám --
+                each clinic in clinics
+                  - var isSelected = doctor && doctor.clinics && doctor.clinics.toString() === clinic._id.toString()
+                  option(
+                    value=clinic._id
+                    selected=isSelected
+                  ) #{clinic.name}
+
+    .d-flex.justify-content-between.mt-4
+      a.btn.btn-secondary(href=`${prefixAdmin}/users`)
+        i.fas.fa-arrow-left.me-1
+        | Quay Lại
+      
+      button(type="submit" class="btn btn-primary")
+        i.fas.fa-save.me-1
+        | Lưu Thay Đổi
+
+  script.
+    function toggleDoctorFields(roleId) {
+      const doctorSection = document.getElementById('doctorSection');
+      if (roleId === 'R2') {
+        doctorSection.style.display = '';
+      } else {
+        doctorSection.style.display = 'none';
+      }
+    }

@@ -52,12 +52,32 @@ block content
                 input.form-control(type="text" name="phone" value=user.phone)
               
               div.col-md-6.mb-3
+                label.form-label.fw-bold Phòng Khám/Bệnh Viện
+                select.form-select(name="clinics" required)
+                  option(value="") -- Chọn phòng khám/bệnh viện --
+                  each clinic in clinics
+                    - const isSelected = user.doctor.clinics && user.doctor.clinics._id.toString() === clinic._id.toString()
+                    option(value=clinic._id selected=isSelected) #{clinic.name}
+              
+              div.col-12.mb-3
                 label.form-label.fw-bold Chuyên Khoa
-                input.form-control(type="text" name="specialty" value=user.doctor.specialty)
+                div.row
+                  each specialty in specialties
+                    div.col-md-4.mb-2
+                      div.form-check
+                        - const isChecked = user.doctor.specialties && user.doctor.specialties.some(s => s._id.toString() === specialty._id.toString())
+                        input.form-check-input(
+                          type="checkbox" 
+                          name="specialties" 
+                          value=specialty._id 
+                          id=`specialty-${specialty._id}`
+                          checked=isChecked
+                        )
+                        label.form-check-label(for=`specialty-${specialty._id}`) #{specialty.name}
               
               div.col-12.mb-3
                 label.form-label.fw-bold Giới Thiệu / Tiểu Sử
-                textarea.form-control(name="bio" rows="4") #{user.doctor.description}
+                textarea.form-control.tinymce-editor(name="description" id="description" rows="8") #{user.doctor.description}
         
         div.d-grid.gap-2.d-md-flex.justify-content-md-end.mt-3
           button.btn.btn-secondary.me-md-2(type="reset")

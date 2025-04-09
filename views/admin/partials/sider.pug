@@ -4,35 +4,33 @@ button.sidebar-toggle.btn.btn-primary(type="button", onclick="toggleSidebar()")
 .sider 
     .inner-menu 
         ul 
-            li
+            li 
                 a(href=`${prefixAdmin}/dashboard`)
                     i.fas.fa-tachometer-alt
                     | Tổng Quan
             li 
-                a(href=`${prefixAdmin}/clinics`)
-                    i.fa-solid.fa-house-chimney-medical
-                    | Phòng Khám
-            li 
-                a(href=`${prefixAdmin}/specialties`)
-                    i.fa-solid.fa-bed
-                    | Chuyên Khoa
-            li 
-                a(href=`${prefixAdmin}/posts`)
-                    i.fa-regular.fa-newspaper
-                    | Bài Viết
-            li 
-                a(href=`${prefixAdmin}/bookings`)
-                    i.fa-solid.fa-calendar-week
-                    | Lịch Khám
-            li 
                 a(href=`${prefixAdmin}/users`)
                     i.fa-solid.fa-users
                     | Tài Khoản Người Dùng
-            
+            li 
+                a(href=`${prefixAdmin}/specialties`)
+                    i.fas.fa-stethoscope
+                    | Chuyên Khoa
+            li 
+                a(href=`${prefixAdmin}/clinics`)
+                    i.fas.fa-hospital
+                    | Phòng Khám
+            li 
+                a(href=`${prefixAdmin}/posts`)
+                    i.fas.fa-newspaper
+                    | Bài Viết
+            li 
+                a(href=`${prefixAdmin}/bookings`)
+                    i.fas.fa-calendar-check
+                    | Lịch Hẹn
             li 
                 a(href=`${prefixAdmin}/settings/general`)
                     i.fas.fa-cogs
                     | Cài Đặt Chung
-            
-            
-            
+
+

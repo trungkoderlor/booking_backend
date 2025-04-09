@@ -1,40 +1,54 @@
 extends ../../layouts/default.pug
 include ../../mixins/alert.pug
-include ../../mixins/select-tree.pug
+
 block head 
   link(rel='stylesheet', href='/admin/css/form.css')
+
 block main
   +alert-error(expressFlash,5000)
   +alert-success(expressFlash,5000)
-  h1(class="mb-4") Thêm Mới Chuyên Khoa
   
-  form(action=`${prefixAdmin}/specialties/create` method="POST" enctype="multipart/form-data")
+  h1(class="mb-4") Chỉnh Sửa Bài Viết
+  
+  form(action=`${prefixAdmin}/posts/edit/${record.slug}?_method=PATCH` method="POST" enctype="multipart/form-data")
     .card.mb-4.shadow-sm
       .card-header.bg-primary.text-white
-        h5.mb-0 Thông Tin Chuyên Khoa
+        h5.mb-0 Thông Tin Bài Viết
       .card-body
         .row
           .col-md-12.mb-3
             div(class="form-group")
-              label(for="name") Tên Chuyên Khoa *
+              label(for="title") Tiêu Đề *
               input(
                 type="text"
                 class="form-control"
-                id="name"
-                name="name"
+                id="title"
+                name="title"
+                value=record.title
                 required
               )
           
-          .col-md-12.mb-3  
+          .col-md-12.mb-3
             div(class="form-group")
-              label(for="description") Mô Tả *
+              label(for="shortDescription") Mô Tả Ngắn *
+              textarea(
+                class="form-control"
+                id="shortDescription"
+                name="shortDescription"
+                rows="3"
+                required
+              )= record.shortDescription
+          
+          .col-md-12.mb-3
+            div(class="form-group")
+              label(for="content") Nội Dung Chi Tiết *
               textarea(
                 class="form-control textarea-mce"
-                id="description"
-                name="description"
-                rows="6"
+                id="content"
+                name="content"
+                rows="10"
                 required
-              )
+              )= record.content
           
           .col-md-6.mb-3
             div(class="form-group")
@@ -44,37 +58,38 @@ block main
                   input(
                     type="radio"
                     class="form-check-input"
-                    id="statusActive"
+                    id="statusPublished"
                     name="status"
-                    value="active"
-                    checked
+                    value="published"
+                    checked=record.status === "published"
                   )
-                  label(for="statusActive" class="form-check-label") Hoạt động
+                  label(for="statusPublished" class="form-check-label") Công khai
                 
                 div(class="form-check")
                   input(
                     type="radio"
                     class="form-check-input"
-                    id="statusInactive"
+                    id="statusDraft"
                     name="status"
-                    value="inactive"
+                    value="draft"
+                    checked=record.status === "draft"
                   )
-                  label(for="statusInactive" class="form-check-label") Không hoạt động
+                  label(for="statusDraft" class="form-check-label") Nháp
           
           .col-md-12.mb-3
             div(class="form-group" upload-image)
-              label(for="avatar") Ảnh Đại Diện
+              label(for="poster") Ảnh Đại Diện
               input(
                 type="file"
                 class="form-control-file"
-                id="avatar"
-                name="avatar"
+                id="poster"
+                name="poster"
                 accept="image/*"
                 upload-image-input
               )
               div.d-flex.align-items-center.mt-2
                 img(
-                  src=""
+                  src=record.poster || ""
                   class="image-preview me-3"
                   upload-image-preview
                   style="max-width: 200px; max-height: 200px;"
@@ -86,14 +101,10 @@ block main
                 ) Hủy
     
     .d-flex.justify-content-between.mt-4
-      a.btn.btn-secondary(href=`${prefixAdmin}/specialties`)
+      a.btn.btn-secondary(href=`${prefixAdmin}/posts`)
         i.fas.fa-arrow-left.me-1
         | Quay Lại
       
       button(type="submit" class="btn btn-primary")
         i.fas.fa-save.me-1
-        | Tạo Mới
-
-
-
-
+        | Lưu Thay Đổi

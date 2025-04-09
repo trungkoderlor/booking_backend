@@ -7,7 +7,7 @@ module.exports.viewSchedules = async (req, res) => {
     const schedules = await Schedule.find({
       doctorId: req.doctor._id,
       deleted: false,
-    }).sort({ date: 1 });
+    }).sort({ date: -1 });
     const allCodes = await AllCode.find({ key: "time" });
     const allCodesMap = Object.fromEntries(
       allCodes.map((code) => [code.type, code.valueVi])

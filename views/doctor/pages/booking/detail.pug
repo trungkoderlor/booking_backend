@@ -79,7 +79,7 @@ block content
                       select.form-select(name="status" required)
                         option(value="" disabled selected) Chọn trạng thái
                         each status in statusCodes
-                          option(value=status.valueEn, selected=booking.statusId === status.type) #{status.valueVi}
+                          option(value=status.type, selected=booking.statusId === status.type) #{status.valueVi}
                     button.btn.btn-primary.w-100(type="submit")
                       i.fas.fa-save.me-1
                       | Cập Nhật Trạng Thái

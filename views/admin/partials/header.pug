@@ -1,4 +1,3 @@
-
 header.header
     .row(style="height: 100%")
       .col-6
@@ -8,10 +7,10 @@ header.header
         .header__right.float-right
           .account
             <i class="fa-solid fa-user-secret mr-2"></i>
-            .account__name Dau Huy Trung
+            .account__name= user ? user.fullname : "Admin User"
             .dropdown
               ul
                 li
                   a(href=`${prefixAdmin}/my-account`) Thông tin chi tiết
                 li
-                  a(href=`${prefixAdmin}/auth/logout`) Logout
+                  a(href=`${prefixAdmin}/auth/logout`) Đăng xuất

@@ -1,0 +1,113 @@
+extends ../../layouts/default.pug
+include ../../mixins/alert.pug
+include ../../mixins/moment.pug
+
+block head 
+  link(rel='stylesheet', href='/admin/css/product.css')
+
+block main
+  +alert-error(expressFlash,5000)
+  +alert-success(expressFlash,5000)
+  
+  h1(class="mb-4") Chi Tiết Chuyên Khoa
+  
+  .card.mb-4.shadow-sm
+    .card-header.bg-primary.text-white
+      h5.mb-0
+        i.fas.fa-stethoscope.me-2
+        | Thông Tin Chuyên Khoa
+    .card-body
+      .row
+        .col-md-4.text-center.mb-3.mb-md-0
+          if record.avatar
+            img.img-thumbnail(src=record.avatar, alt="Avatar", style="max-width: 100%;")
+          else
+            img.img-thumbnail(src="/uploads/default-specialty.png", alt="Default Image", style="max-width: 100%;")
+        .col-md-8
+          .row
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Tên Chuyên Khoa:
+                p.form-control-static #{record.name}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Đường Dẫn:
+                p.form-control-static #{record.slug}
+            .col-md-12.mb-3
+              .form-group
+                label.fw-bold Mô Tả:
+                p.form-control-static !{record.description}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Trạng Thái:
+                p.form-control-static
+                  span.badge(class=record.status === "active" ? "bg-success" : "bg-danger")
+                    | #{record.status === "active" ? "Hoạt động" : "Không hoạt động"}
+            .col-md-6.mb-3
+              .form-group
+                label.fw-bold Ngày Tạo:
+                p.form-control-static
+                  +formatDateTime(record.createdAt)
+  
+  if doctors && doctors.length > 0
+    .card.mb-4.shadow-sm
+      .card-header.bg-info.text-white
+        h5.mb-0
+          i.fas.fa-user-md.me-2
+          | Bác Sĩ Thuộc Chuyên Khoa
+      .card-body
+        .table-responsive
+          table.table.table-hover.table-striped
+            thead
+              tr
+                th STT
+                th Ảnh
+                th Họ Tên
+                th Email
+                th Số Điện Thoại
+                th Trạng Thái
+            tbody
+              each doctor, index in doctors
+                tr
+                  td= index + 1
+                  td
+                    if doctor.userId.avatar
+                      img(src=doctor.userId.avatar, alt="Avatar", width="50px", height="50px", class="rounded-circle")
+                    else
+                      img(src="/uploads/default-avatar.png", alt="Default Avatar", width="50px", height="50px", class="rounded-circle")
+                  td #{doctor.userId.fullname}
+                  td #{doctor.userId.email}
+                  td #{doctor.userId.phone || "Chưa cập nhật"}
+                  td
+                    span.badge(class=doctor.userId.status === "active" ? "bg-success" : "bg-danger")
+                      | #{doctor.userId.status === "active" ? "Hoạt động" : "Không hoạt động"}
+  else
+    .alert.alert-info
+      i.fas.fa-info-circle.me-2
+      | Chưa có bác sĩ nào thuộc chuyên khoa này.
+  
+  .mt-4.d-flex.justify-content-between
+    a.btn.btn-secondary(href=`${prefixAdmin}/specialties`)
+      i.fas.fa-arrow-left.me-1
+      | Quay Lại
+    .btn-group
+      a.btn.btn-warning(href=`${prefixAdmin}/specialties/edit/${record.slug}`)
+        i.fas.fa-edit.me-1
+        | Chỉnh Sửa
+      button.btn.btn-danger(type="button" data-bs-toggle="modal" data-bs-target="#deleteModal")
+        i.fas.fa-trash-alt.me-1
+        | Xóa
+
+  // Delete Confirmation Modal
+  #deleteModal.modal.fade(tabindex="-1")
+    .modal-dialog
+      .modal-content
+        .modal-header.bg-danger.text-white
+          h5.modal-title Xác Nhận Xóa
+          button.btn-close(type="button" data-bs-dismiss="modal" aria-label="Close")
+        .modal-body
+          p Bạn có chắc chắn muốn xóa chuyên khoa này không? Hành động này không thể hoàn tác.
+        .modal-footer
+          button.btn.btn-secondary(type="button" data-bs-dismiss="modal") Hủy
+          form(action=`${prefixAdmin}/specialties/delete/${record._id}?_method=DELETE` method="POST" style="display: inline-block;")
+            button.btn.btn-danger(type="submit") Xóa

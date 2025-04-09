@@ -187,3 +187,34 @@ footer {
     padding-right: 1rem;
   }
 }
+
+/* TinyMCE Editor Styling */
+.tox-tinymce {
+  border-radius: 0.25rem !important;
+  border-color: #ced4da !important;
+}
+
+.tox .tox-toolbar, .tox .tox-toolbar__overflow, .tox .tox-toolbar__primary {
+  background-color: #f8f9fa !important;
+}
+
+/* Doctor profile view styling */
+.doctor-description {
+  line-height: 1.6;
+}
+
+.doctor-description h1, 
+.doctor-description h2, 
+.doctor-description h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.doctor-description ul, 
+.doctor-description ol {
+  padding-left: 1.5rem;
+}
+
+.doctor-description p {
+  margin-bottom: 1rem;
+}

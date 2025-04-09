@@ -4,7 +4,6 @@ const Specialty = require("../../models/specialty.model");
 const Clinic = require("../../models/clinic.model");
 const Schedule = require("../../models/schedule.model");
 const AllCode = require("../../models/allcode.model");
-const Booking = require("../../models/booking.model");
 //[GET] /api/doctors
 module.exports.index = async (req, res) => {
   try {
