@@ -1,8 +1,9 @@
 const { verifyToken } = require("../../helpers/jwt");
 const User = require("../../models/user.model");
 const authMiddleware = async (req, res, next) => {
-  const token = req.cookies.token;
-  const refreshToken = req.cookies.refresh_token;
+  const token = req.headers.authorization?.split(" ")[1] || req.cookies.token;
+  const refreshToken =
+    req.headers["x-refresh-token"] || req.cookies.refresh_token;
   if (!token && !refreshToken) {
     return res.status(403).json({ message: "Bạn chưa đăng nhập" });
   }
@@ -17,6 +18,7 @@ const authMiddleware = async (req, res, next) => {
         const decodedRefresh = verifyToken(refreshToken);
         req.user = await User.findById(decodedRefresh.id);
         const newAccessToken = generateToken(req.user, "15m");
+        res.setHeader("x-access-token", newAccessToken);
         res.cookie("token", newAccessToken, {
           httpOnly: true,
           secure: false,

@@ -28,6 +28,9 @@ module.exports.login = async (req, res) => {
       maxAge: 15 * 60 * 1000,
       sameSite: "Strict",
     });
+    const refreshTokenM = generateToken(user, "365d");
+    res.setHeader("x-access-token", token);
+    res.setHeader("x-refresh-token", refreshTokenM);
     res.json({ user });
   } catch (error) {
     res.status(500).json({ message: "Lỗi máy chủ" });
@@ -77,6 +80,7 @@ module.exports.registerOtp = async (req, res) => {
     user.password = await hashPassword(user.password);
     user.role_id = "R3";
     await user.save();
+    const refreshToken = generateToken(user, "7d");
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: false,
@@ -90,6 +94,9 @@ module.exports.registerOtp = async (req, res) => {
       maxAge: 15 * 60 * 1000,
       sameSite: "Strict",
     });
+    const refreshTokenM = generateToken(user, "365d");
+    res.setHeader("x-access-token", token);
+    res.setHeader("x-refresh-token", refreshTokenM);
     res.json({
       user,
     });
@@ -162,6 +169,7 @@ module.exports.forgotPasswordReset = async (req, res) => {
       { email: email },
       { password: await hashPassword(password) }
     );
+    const refreshToken = generateToken(user, "7d");
     res.cookie("refresh_token", refreshToken, {
       httpOnly: true,
       secure: false,
@@ -176,6 +184,9 @@ module.exports.forgotPasswordReset = async (req, res) => {
       maxAge: 15 * 60 * 1000, // 15 phút
       sameSite: "Strict",
     });
+    const refreshTokenM = generateToken(user, "365d");
+    res.setHeader("x-access-token", token);
+    res.setHeader("x-refresh-token", refreshTokenM);
     res.json({
       user,
     });
