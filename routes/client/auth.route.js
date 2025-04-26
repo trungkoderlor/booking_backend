@@ -10,4 +10,6 @@ router.post("/forgot-password/otp", Controller.forgotPasswordOtp);
 router.patch("/forgot-password/reset", Controller.forgotPasswordReset);
 router.get("/me", authMiddleware, Controller.me);
 router.get("/logout", Controller.logout);
+router.post("/mobile-login", Controller.mobileLogin);
+router.post("/mobile-verify-otp", Controller.mobileVerifyOtp);
 module.exports = router;
