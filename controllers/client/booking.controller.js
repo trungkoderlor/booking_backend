@@ -86,10 +86,23 @@ module.exports.create = async (req, res) => {
     if (maxNumber.currentNumber >= maxNumber.maxNumber) {
       return res.status(400).json({ message: "Lịch đã đủ số lượng!" });
     }
-    const doctor = await Doctor.findOne().populate({
-      path: "userId",
-      match: { slug: doctor_slug },
-    });
+    const user = await User.findOne({ slug: doctor_slug });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy bác sĩ với slug này!" });
+    }
+
+    // Sau đó tìm doctor có userId là _id của user vừa tìm được
+    const doctor = await Doctor.findOne({ userId: user._id })
+      .populate("userId")
+      .populate("clinics");
+
+    if (!doctor) {
+      return res
+        .status(404)
+        .json({ message: "Không tìm thấy thông tin bác sĩ!" });
+    }
     const userId = req.user.id;
     const booking = new Booking({
       statusId: "S1",
